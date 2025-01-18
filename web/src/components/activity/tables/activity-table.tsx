@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { PaginationTable } from "../../table/PaginationTable";
 import { toast } from "sonner";
 import UserSelect from "../../users/select/user-select";
+import TableSkeleton from "../../esqueleto/table";
 const getRandomColor = (status: StatusVisitEnum) => {
   if (status === StatusVisitEnum.Initiated) {
     return 'orange'; // Naranja claro
@@ -198,7 +199,12 @@ const ActivityTable = () => {
         {/* Filtro Card */}
           <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
             <div className="overflow-hidden">
-              <table className="min-w-full text-left text-sm font-light">
+              {
+                loading
+                ?
+                <TableSkeleton columns={6} rows={6}/>
+                :
+                <table className="min-w-full text-left text-sm font-light">
                 <thead className="border-b font-medium dark:border-neutral-500">
                   <tr>
                     <th scope="col" className="px-6 py-4">
@@ -223,10 +229,6 @@ const ActivityTable = () => {
                 </thead>
                 <tbody>
                   {
-                    loading
-                    ?
-                    <>Cargando...</>
-                    :
                     data?.visits.map((visit)=> {
                       return (
                         <tr className="border-b dark:border-neutral-500">
@@ -254,6 +256,7 @@ const ActivityTable = () => {
                   }
                 </tbody>
               </table>
+              }
             </div>
             <Card className="w-50 md:w-30 lg:w-50">
               <PaginationTable skipState={{ value: skip, setValue: setSkip }} metaDataPagination={data?.visitsCount as MetadataPagination} takeValue={takeValue} />

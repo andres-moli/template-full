@@ -4,6 +4,7 @@ import { MetadataPagination, User, UserStatusTypes, useUsersQuery } from '../../
 import { PaginationTable } from '../../table/PaginationTable';
 import Card from '../../cards/Card';
 import EditUserModal from '../../modals/modal-user/modal-edit-user';
+import TableSkeleton from '../../esqueleto/table';
 
 const UserTable: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -71,8 +72,12 @@ const UserTable: React.FC = () => {
           />
         </div>
       </div>
-
-      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+      {
+        loading
+        ?
+        <TableSkeleton columns={6} rows={6}/>
+        :
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="p-4">
@@ -97,10 +102,6 @@ const UserTable: React.FC = () => {
         </thead>
         <tbody>
           {
-          loading
-          ?
-          <>Cargando...</>
-          :
           data?.users.map((user, index) => (
               <tr
                 key={index}
@@ -159,6 +160,7 @@ const UserTable: React.FC = () => {
             ))}
         </tbody>
       </table>
+      }
       <Card className="w-50 md:w-30 lg:w-50">
         <PaginationTable skipState={{ value: skip, setValue: setSkip }} metaDataPagination={data?.usersCount as MetadataPagination} takeValue={takeValue} />
       </Card>
