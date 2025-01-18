@@ -1,0 +1,382 @@
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Between, In, Not, Repository } from 'typeorm';
+import { FindCitiesArgs } from 'src/general/city/dto/args/find-cities.arg';
+import { CrudServiceFrom } from 'src/patterns/crud-pattern/mixins/crud-service.mixin';
+import { CrudServiceStructure } from 'src/patterns/crud-pattern/interfaces/structures/crud-service-structure.interface';
+import { IContext } from 'src/patterns/crud-pattern/interfaces/context.interface';
+import { User } from 'src/security/users/entities/user.entity';
+import { Visit } from '../entities/visit.entity';
+import { CreateVisitInput } from '../dto/inputs/create-visit.input';
+import { UpdateVisitInput } from '../dto/inputs/update-visit.input';
+import { FindVisitArgs } from '../dto/args/find-visit.args';
+import { ClientService } from '../../client/services/client.service';
+import { UsersService } from 'src/security/users/services/users.service';
+import { ParameterService } from 'src/general/parameters/service/parameter.service';
+import { StatusVisitEnum } from '../emun/visit.emun';
+import moment from 'moment';
+import { VisitTypeService } from '../../visit-type/service/visit-type.service';
+import { MailService } from 'src/general/email/service/email.service';
+import { UserTypes } from 'src/security/users/enums/user-type.enum';
+import { Response } from 'express';
+import * as ExcelJS from 'exceljs';
+import { QUERY_VISIT_STATUS_BY_COMENT, QUERY_VISIT_STATUS_BY_DATE } from '../sql/index.sql';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { VisitComentService } from '../../visit-coment/services/visit-coment.service';
+import { VisitComentStatusEnum, VisitComentTypeEnum } from '../../visit-coment/emun/visit-coment.emun';
+import { findOneVisitInProcessInput } from '../dto/inputs/find-visit-process';
+import { UpdateStatusInput } from '../dto/inputs/update-status-visit.dto';
+import { VisitComent } from '../../visit-coment/entities/visit-coment.entity';
+export const serviceStructure = CrudServiceStructure({
+  entityType: Visit,
+  createInputType: CreateVisitInput,
+  updateInputType: UpdateVisitInput,
+  findArgsType: FindVisitArgs,
+});
+
+@Injectable()
+export class VisitService extends CrudServiceFrom(serviceStructure) {
+  constructor(
+    private readonly clientService: ClientService,
+    private readonly usersService: UsersService,
+    private readonly parameterService: ParameterService,
+    private readonly visitTypeService: VisitTypeService,
+    private readonly mailService: MailService,
+    private readonly httpService: HttpService,
+    @Inject(forwardRef(() => VisitComentService))
+    private readonly visitComentService: VisitComentService
+  ){ super(); }
+
+
+  async beforeCreate(context:IContext,repository: Repository<Visit>, entity: Visit, createInput: CreateVisitInput): Promise<void> {
+    entity.status = StatusVisitEnum.initiated
+    // entity.client = await this.clientService.findOne(context,createInput.clientId, true);
+    entity.user = await this.usersService.findOne(context,createInput.userId, true);
+    entity.dateVisit = createInput.dateVisit
+    // entity.type = await this.visitTypeService.findOne(context,createInput.typeId,true);
+  }
+  async calculateTotalHours(visit: Visit): Promise<number> {
+    const manager = this.getRepository({user: undefined}).manager
+    const startComent = await manager.findOne(VisitComent,{
+      where: { 
+        visit: {
+          id: visit.id
+        }, 
+        type: VisitComentTypeEnum.INICIO 
+      },
+    });
+
+    const endComent = await manager.findOne(VisitComent,{
+      where: { 
+        visit: {
+          id: visit.id
+        }, 
+        type: VisitComentTypeEnum.FIN 
+      },
+    });
+
+    if (!startComent || !endComent) {
+      return 0; // Si falta algún comentario de INICIO o FIN, no podemos calcular las horas
+    }
+
+    // Calcular la diferencia entre las fechas en minutos
+    const startTime = moment(startComent.dateFull);
+    const endTime = moment(endComent.dateFull);
+    const durationInMinutes = endTime.diff(startTime, 'minutes');
+
+    // Convertir a horas con una cifra decimal redondeada
+    const durationInHours = Math.round((durationInMinutes / 60) * 10) / 10;
+
+    return durationInMinutes;
+  }
+
+  // Método para obtener una visita con las horas calculadas
+  async getVisitWithTotalHours(userId: string): Promise<number> {
+    const visit = await this.getRepository({user: undefined}).find({
+      where: { 
+        user: {
+          id: userId
+        } 
+      },
+      relations: ['visitItem'],
+    });
+
+    if (visit) {
+      // Calculamos las horas y las asignamos a la propiedad totalHours
+      // return await this.calculateTotalHours(visit);
+    }
+
+    return 0;
+  }
+  async afterCreate(context: IContext, repository: Repository<Visit>, entity: Visit, createInput: CreateVisitInput): Promise<void> {
+    // const aceptAdminVisit = await this.parameterService.findOneCodigo(context, 'ACEPT-VISIT-EMAIL',true)
+    // if(typeof aceptAdminVisit === 'string' && aceptAdminVisit === 'SI'){
+    //   await this.sendMailAdmin(context,entity)
+    // }
+    // if(typeof aceptAdminVisit === 'string' && aceptAdminVisit === "NO"){
+    //   entity.status = StatusVisitEnum.confirmed
+    //   await repository.save(entity)
+    // }
+    await this.visitComentService.create(context,{
+      type: VisitComentTypeEnum.INICIO,
+      visitId: entity.id,
+      description: entity.description,
+      date: entity.dateVisit,
+      status: VisitComentStatusEnum.REALIZED,
+      latitude: entity.latitude,
+      longitude: entity.longitude,
+      dateFull: entity.dateVisit,
+      time: entity.dateVisit,
+    })
+
+  }
+  async finishVisit(context: IContext, updateInput: UpdateStatusInput){
+    const repository = this.getRepository(context);
+    const entity = await this.findOne(context,updateInput.id,true);
+    entity.status = StatusVisitEnum.realized
+    const responseEntity = await repository.save(entity);
+    await this.visitComentService.create(context,{
+      type: VisitComentTypeEnum.FIN,
+      visitId: entity.id,
+      description: updateInput.description,
+      date: updateInput.dateVisit,
+      status: VisitComentStatusEnum.REALIZED,
+      latitude: updateInput.latitude,
+      longitude: updateInput.longitude,
+      dateFull: moment(moment(updateInput.dateVisit).format('YYYY-MM-DD HH:mm')).local().toDate(),
+      time: updateInput.dateVisit,
+    })
+    return responseEntity
+  }
+  async sendWhastapp(number: string, entity: Visit){
+    try {
+      const url = "http://intranet.cytech.net.co:3003/send-message";
+      const headers = {
+          'Content-Type': 'application/json',
+      };
+      const status = entity.status == StatusVisitEnum.confirmed ? 'CONFIRMADA' : 'CANCELADA'
+      const payload = {
+        number: "57" + number,
+        message: `Hola ${(await entity.user).name}, su visita para el dia [${moment(entity.dateVisit).format('YYYY-MM-DD HH:mm:ss')}] con el cliente , fue  ${status}`
+      }
+      const response = await firstValueFrom(this.httpService.post(url, payload, {headers}));
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+  async sendWhastappAdmin(entity: Visit, urlAcept: string, urlRechazar: string){
+    try {
+      const url = "http://intranet.cytech.net.co:3003/send-message";
+      const headers = {
+          'Content-Type': 'application/json',
+      };
+      const status = entity.status == StatusVisitEnum.confirmed ? 'CONFIRMADA' : 'CANCELADA'
+      const payload = {
+        number: "57" + "3176578598",
+        message: `
+        El trabajador ${(await entity.user).name}, creo una  visita para el dia [${moment(entity.dateVisit).format('YYYY-MM-DD HH:mm:ss')}] con el cliente, por favor revisar
+        \n\n
+        Click aquí para aceptar --> [${urlAcept}] \n\n
+        Click aquí para rechazar --> [${urlRechazar}] \n\n
+        `
+      }
+      const response = await firstValueFrom(this.httpService.post(url, payload, {headers}));
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+  async sendMailAdmin(context: IContext,visit: Visit){
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9c'
+    const emailUserConfirm = await this.parameterService.findOneCodigo(context,'EMAIL-CONFIRM-VISIT',true);
+    if(typeof emailUserConfirm === 'string'){
+      let contextE = {
+        userName: (await visit.user).name,
+        visitDate: moment(visit.dateVisit).format('YYYY-MM-DD'),
+        // clientName: (await visit.client).name,
+        // clientAddress: await (visit.client).address || "SIN DIRECCION",
+        visitorName: (await visit.user).name,
+        statusVisit: visit.status,
+        // typeVisit: (await visit.type)?.name,
+        urlAcept: process.env.EMAIL_FRONTEND + 'public/confimEmail/confirmed/' + visit.id + '/'+ token,
+        urlRech: process.env.EMAIL_FRONTEND + 'public/confimEmail/canceled/' + visit.id + '/'+ token
+
+      }
+      await this.mailService.sendMail(emailUserConfirm,"Confirmación de Visita", "aceptOrDecline",contextE)
+      const urlAcpet = process.env.EMAIL_FRONTEND + 'public/confimEmail/confirmed/' + visit.id + '/'+ token;
+      const urlRech = process.env.EMAIL_FRONTEND + 'public/confimEmail/canceled/' + visit.id + '/'+ token
+      this.sendWhastappAdmin(visit,urlAcpet,urlRech)
+    }
+  }
+  async findActivityNowUser(context: IContext, id: string){
+    const visits = await this.find(context, {
+      where: {
+        user: {
+          id: id
+        },
+        status: StatusVisitEnum.initiated
+      },
+    })
+    return visits.length > 0
+  }
+  async findOneVisitDetail(context: IContext, id: string){
+    const visit = await this.find(context, {
+      where: {
+        id: id
+      },
+      relations: {  
+        
+      }
+    })
+
+  }
+  async sendMail(context: IContext, entity: Visit){
+    if(entity.status == StatusVisitEnum.confirmed){
+      let contextE = {
+        userName: (await entity.user).name,
+        visitDate: moment(entity.dateVisit).format('YYYY-MM-DD'),
+        // clientName: (await entity.client).name,
+        // clientAddress: await (entity.client).address || "SIN DIRECCION",
+        visitorName: (await entity.user).name,
+        statusVisit: entity.status,
+        // typeVisit: (await entity.type)?.name
+      }
+      await this.mailService.sendMail((await entity.user).email,"Visita Confirmada", "confirm",contextE)
+    }
+  }
+  async findAllVisitDashboard(context: IContext){
+    const earrings = await this.find(context, {
+      where: {
+        status: In([StatusVisitEnum.confirmed,StatusVisitEnum.reprogrammed]), 
+        user: {
+          id: context.user.id
+        }
+      },
+      order: {
+        dateVisit: 'DESC'
+      },
+      take: 5
+    });
+    const realized = await this.find(context, {
+      where: {
+        status: StatusVisitEnum.realized, 
+      },
+      order: {
+        dateVisit: 'DESC'
+      },
+      take: 5
+    });
+    return {
+      earrings,
+      realized
+    }
+  }
+  async acceptOrDeclineVisit(context: IContext, id: string, status: StatusVisitEnum ){
+    const visita = await this.findOne(context,id);
+    if(!visita){
+      throw new Error("NO EXISTE EL ID DE LA VISITA")
+    }
+
+    if(visita.status == StatusVisitEnum.canceled)  throw new Error("ESTA VISITA YA FUE CANCELADA")
+    if(visita.status == StatusVisitEnum.confirmed) throw new Error("ESTA VISITA YA FUE CONFIRMADA")
+    if(visita.status == StatusVisitEnum.realized) throw new Error("ESTA VISITA YA FUE RELIZADA")
+
+    await this.update(context,id, {id,status: status})
+    const number  = (await visita.user).phoneNumber
+    this.sendWhastapp(number,visita)
+    this.sendMail(context,visita)
+    return "VISITA CONFIRMADA CON EXITO"
+
+  }
+  async countStatusVisitByDate(context: IContext, dateInit: string, dateFinis: string,res: Response){
+    const repository = this.getRepository(context)
+    const sql = QUERY_VISIT_STATUS_BY_DATE(dateInit,dateFinis)
+    const datos = await repository.manager.query(sql)
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Datos');
+
+    worksheet.columns = [
+      { header: 'Trabajador', key: 'trabajador', width: 30 },
+      { header: 'Total Programadas', key: 'totalProgramadas', width: 20 },
+      { header: 'Total Realizadas', key: 'totalRealizadas', width: 20 },
+      { header: 'Total Cancelada', key: 'totalCancelada', width: 20 },
+      { header: 'Total Confirmada', key: 'totalConfirmada', width: 20 },
+      { header: 'Total Visitas', key: 'totalVisitas', width: 15 },
+    ];
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.style = {
+        font: { bold: true, color: { argb: 'FFFFFFFF' } },
+        fill: {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF808080' }, // Gris
+        },
+      };
+    });
+
+    datos.forEach(dato => {
+      worksheet.addRow({
+        userId: dato.userId,
+        trabajador: dato.trabajador,
+        totalVisitas: dato.totalVisitas,
+        totalProgramadas: dato.totalProgramadas,
+        totalRealizadas: dato.totalRealizadas,
+        totalCancelada: dato.totalCancelada,
+        totalConfirmada: dato.totalConfirmada,
+      });
+    });
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader('Content-Disposition', `attachment; filename=reporte-${Date.now()}.xlsx`);
+
+    await workbook.xlsx.write(res);
+    res.end();
+  }
+  async countStatusVisitStatistic(context: IContext, dateInit: string, dateFinis: string){
+    const repository = this.getRepository(context)
+    const sql = QUERY_VISIT_STATUS_BY_DATE(dateInit,dateFinis)
+    const datos = await repository.manager.query(sql)
+    const minimiVisit = await this.parameterService.findOneCodigo(context,'MIN-VISIT-MONTH', true);
+    const response = datos?.map((x)=> {
+      return {
+        name: x.trabajador,
+        totalVisitas: x.totalVisitas,
+        totalProgramadas: x.totalProgramadas,
+        totalRealizadas: x.totalRealizadas,
+        totalCancelada: x.totalCancelada,
+        totalConfirmada: x.totalConfirmada,
+        minimiVisit: +minimiVisit
+      }
+    })
+    return response
+  }
+  async countStatusVisitComentStatic(context: IContext,dateInit: string, dateFinis: string) {
+    const repository = this.getRepository(context)
+    const sql = QUERY_VISIT_STATUS_BY_COMENT(dateInit,dateFinis)
+    const datos = await repository.manager.query(sql)
+    const response = datos?.map((x)=> {
+      return {
+        name: x.trabajador,
+        totalComentarios: x.totalComentarios,
+        totalPendientes: x.totalPendientes,
+        totalRealizadas: x.totalRealizadas,
+        totalCancelada: x.totalCancelada,
+      }
+    })
+    return response
+  }
+  async commisionDataUser(){
+  try {
+    const response = await firstValueFrom(this.httpService.get('http://localhost:3004/some/POGRESO_DE_VENTAS'));
+    return response.data
+
+  }catch(err){
+    return new BadRequestException(err.message)
+  }
+  }
+}
