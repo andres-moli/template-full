@@ -2172,6 +2172,7 @@ export type UpdateUserInput = {
   phoneNumber?: InputMaybe<Scalars['String']>;
   position?: InputMaybe<Scalars['String']>;
   secondSurname?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<UserStatusTypes>;
   type?: InputMaybe<UserTypes>;
   typeWoker?: InputMaybe<TypeWorker>;
 };

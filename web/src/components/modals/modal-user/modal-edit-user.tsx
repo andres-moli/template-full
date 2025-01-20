@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCreateUserMutation, User, UserDocumentTypes, UserTypes, useUpdateUserMutation } from "../../../domain/graphql";
+import { useCreateUserMutation, User, UserDocumentTypes, UserStatusTypes, UserTypes, useUpdateUserMutation } from "../../../domain/graphql";
 import { toast } from "sonner";
 import { ToastyErrorGraph } from "../../../lib/utils";
 import { apolloClient } from "../../../main.config";
@@ -27,6 +27,20 @@ const typeDocumentsOptions: { key: string; value: string | number }[] = [
     value: "Permiso de permanencia espacial"
   },
 ]
+const typeStatusOptions: { key: string; value: string | number }[] = [
+  {
+    key: UserStatusTypes.Active,
+    value: "Activo"
+  },
+  {
+    key: UserStatusTypes.PartlyActive,
+    value: "Activo Parcial"
+  },
+  {
+    key: UserStatusTypes.Inactive,
+    value: "Inactivo"
+  }
+]
 const EditUserModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, user }) => {
   if(!user) return null
   const [update] = useUpdateUserMutation()
@@ -38,6 +52,7 @@ const EditUserModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, user }) 
     phoneNumber: user?.phoneNumber || '',
     identificationNumber: user?.identificationNumber || '',
     identificationType: user?.identificationType || '', 
+    status: user.status
   });
 
   const [errors, setErrors] = useState({
@@ -48,6 +63,7 @@ const EditUserModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, user }) 
     phoneNumber: "",
     identificationNumber: "",
     identificationType: "",
+    status: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -97,7 +113,8 @@ const EditUserModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, user }) 
             id: user.id,
             type: UserTypes.User,
             identificationType: formData.identificationType as UserDocumentTypes,
-            password: formData.identificationNumber
+            password: formData.identificationNumber,
+            status: formData.status as UserStatusTypes
           }
         }
       })
@@ -220,6 +237,26 @@ const EditUserModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, user }) 
               className={`mt-1 block w-full p-2 border ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} rounded-md`}
             />
             {errors.phoneNumber && <span className="text-red-500 text-sm">{errors.phoneNumber}</span>}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="status" className="block text-sm font-medium">Estado</label>
+            <select
+              id="status"
+              name="status"
+              value={formData.identificationType}
+              onChange={handleChange}
+              className={`mt-1 block w-full p-2 border ${errors.status ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+            >
+              <option disabled defaultChecked>Seleccione un estado</option>
+              {
+                typeStatusOptions.map((id)=> {
+                  return (
+                    <option value={id.key}>{id.value}</option>
+                  )
+                })
+              }
+            </select>
+            {errors.status && <span className="text-red-500 text-sm">{errors.status}</span>}
           </div>
 
           <div className="flex justify-end space-x-2">

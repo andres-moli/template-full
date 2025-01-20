@@ -32,11 +32,11 @@ const NavBar = () => {
           </svg>
         </button>
         <div className="flex items-center space-x-2">
-          <img
+          {/* <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSf8LZk98dkqzBdcXuQ4OhFcAg4Oiv6Gye9DQ&s"
             alt="User"
             className="w-10 h-10 rounded-full"
-          />
+          /> */}
           <div className="hidden md:block">
             {/* <p className="text-gray-900 bold">Username</p> */}
           </div>

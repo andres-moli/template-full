@@ -1,4 +1,4 @@
-import { Args, Float, Mutation, Query, Resolver, ID, ResolveField, Parent } from '@nestjs/graphql';
+import { Args, Float, Mutation, Query, Resolver, ID, ResolveField, Parent, Subscription } from '@nestjs/graphql';
 import { CrudResolverStructure } from 'src/security/auth/utils/crud.utils';
 import { AnyUser } from 'src/security/auth/decorators/user-types.decorator';
 import { CrudResolverFrom } from 'src/patterns/crud-pattern/mixins/crud-resolver.mixin';
@@ -10,6 +10,7 @@ import { IContext } from 'src/patterns/crud-pattern/interfaces/context.interface
 import { VisitDashboardModel } from '../dto/models/visit.model';
 import { UpdateStatusInput } from '../dto/inputs/update-status-visit.dto';
 import { User } from 'src/security/users/entities/user.entity';
+import { PubSub } from 'graphql-subscriptions';
 
 export const resolverStructure = CrudResolverStructure({
       ...serviceStructure,

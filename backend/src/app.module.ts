@@ -23,6 +23,7 @@ import { ThrowExceptionFilter } from './common/functions/throw-exception-filter'
 import { AcceptLanguageResolver, GraphQLWebsocketResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { LanguageInterceptor } from './common/i18n/decorators/language.decorator';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { PubSub } from 'graphql-subscriptions';
 
 @Module({
   imports: [
@@ -67,6 +68,11 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       plugins:[
         ApolloServerPluginLandingPageLocalDefault()
       ],
+      subscriptions: {
+        'subscriptions-transport-ws': {
+          path: '/graphql',
+        },
+      },
       resolvers: { ValidatePassword: CustomPasswordScalar },
       formatError: (formatttedError, error: any) => {
           return {
@@ -157,6 +163,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       provide: APP_INTERCEPTOR,
       useClass: LanguageInterceptor,
     },
+    PubSub
   ],
 })
 export class AppModule {}

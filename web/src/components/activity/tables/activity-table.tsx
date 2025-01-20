@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../../cards/Card";
 import { BsEyeFill } from "react-icons/bs";
 import { MdApps } from "react-icons/md";
 import { TbMapShare } from "react-icons/tb";
-import { MetadataPagination, OrderTypes, StatusVisitEnum, useVisitsQuery } from "../../../domain/graphql";
+import { MetadataPagination, OrderTypes, StatusVisitEnum, useVisitsQuery, Visit, VisitComent, VisitComentTypeEnum } from "../../../domain/graphql";
 import dayjs from "dayjs";
 import { PaginationTable } from "../../table/PaginationTable";
 import { toast } from "sonner";
 import UserSelect from "../../users/select/user-select";
 import TableSkeleton from "../../esqueleto/table";
-const getRandomColor = (status: StatusVisitEnum) => {
+import ViewActivityModal from "../modal/view-activity";
+import { BiCommentCheck } from "react-icons/bi";
+import CommentModal from "../modal/comment-activity";
+import MapsComponentComment from "../../Maps";
+export const getRandomColor = (status: StatusVisitEnum) => {
   if (status === StatusVisitEnum.Initiated) {
     return 'orange'; // Naranja claro
   }
@@ -19,7 +23,7 @@ const getRandomColor = (status: StatusVisitEnum) => {
   return '#b2ebf2'; // Azul claro
 };
 
-const getStatusLabel = (status: StatusVisitEnum) => {
+export const getStatusLabel = (status: StatusVisitEnum) => {
   switch (status) {
     case StatusVisitEnum.Initiated:
       return 'Iniciada';
@@ -29,13 +33,39 @@ const getStatusLabel = (status: StatusVisitEnum) => {
       return 'Desconocida';
   }
 };
+const FormatTimeToMinut = (vist: Visit) => {
+  const startTime = dayjs(vist.visitItem.find((x) => x.type === VisitComentTypeEnum.Inicio)?.dateFull || new Date())
+  const endTime = dayjs(vist.visitItem.find((x) => x.type === VisitComentTypeEnum.Fin)?.dateFull || new Date())
+
+  const totalMinutos = endTime.diff(startTime, 'minutes')
+  return totalMinutos
+}
 const ActivityTable = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [selectUser, setSelectUser] = useState<string>("");
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [isCommentMapModalOpen, setIsCommentMapModalOpen] = useState(false);
 
+
+  const [visit, setVisit] = useState<Visit>();
+  const [visitComment, setVisitComment] = useState<VisitComent[]>();
+  const [visitCommentMap, setVisitCommentMap] = useState<VisitComent[]>();
+
+
+
+
+  const openRegisterModal = () => setIsRegisterModalOpen(true);
+  const closeRegisterModal = () => setIsRegisterModalOpen(false);
+  
+  const openCommentModal = () => setIsCommentModalOpen(true);
+  const closeCommentModal = () => setIsCommentModalOpen(false);
+
+  const openMapCommentModal = () => setIsCommentMapModalOpen(true);
+  const closeMapCommentModal = () => setIsCommentMapModalOpen(false);
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "status") {
@@ -110,6 +140,18 @@ const ActivityTable = () => {
     toast.dismiss(toastId)
     console.log("Filtros aplicados:", { statusFilter, startDate, endDate, description,selectUser });
   };
+  const onShow = (visit: Visit) => {
+    setVisit(visit)
+    openRegisterModal()
+  }
+  const onShowComment = (visitComent: VisitComent[]) => {
+    setVisitComment(visitComent)
+    openCommentModal()
+  }
+  const onShowMapComment = (visitComent: VisitComent[]) => {
+    setVisitCommentMap(visitComent)
+    openMapCommentModal()
+  }
   return (
       <>
         <div className="w-full md:w-full lg:w-full">
@@ -213,6 +255,9 @@ const ActivityTable = () => {
                     <th scope="col" className="px-6 py-4">
                       Fecha
                     </th>
+                    {/* <th scope="col" className="px-6 py-4">
+                      tiempo
+                    </th> */}
                     <th scope="col" className="px-6 py-4">
                       Descripción
                     </th>
@@ -220,10 +265,10 @@ const ActivityTable = () => {
                       Estado
                     </th>
                     <th scope="col" className="px-6 py-4">
-                      Ver más
+                      #
                     </th>
                     <th scope="col" className="px-6 py-4">
-                      Ver mapa
+                      Mapa
                     </th>
                   </tr>
                 </thead>
@@ -234,6 +279,9 @@ const ActivityTable = () => {
                         <tr className="border-b dark:border-neutral-500">
                         <td className="whitespace-nowrap px-6 py-4">{visit.user.fullName}</td>
                         <td className="whitespace-nowrap px-6 py-4">{dayjs(visit.dateVisit).format('YYYY-MM-DD HH:mm')}</td>
+                        {/* <td>
+                          {FormatTimeToMinut(visit)}
+                        </td> */}
                         <td className="whitespace-nowrap px-6 py-4">{visit.description}</td>
                         <td className="px-6 py-4">
                         <div className="flex items-center">
@@ -245,10 +293,11 @@ const ActivityTable = () => {
                         </div>
                       </td>
                         <td className="whitespace-nowrap px-6 py-4">
-                           <BsEyeFill className="w-5 h-8 text-gray-500 mr-3 cursor-pointer"/>
+                           <BsEyeFill className="w-5 h-8 text-gray-500 mr-3 cursor-pointer"title="Ver Más" onClick={()=> onShow(visit)}/>
+                           <BiCommentCheck className="w-5 h-8 text-gray-500 mr-3 cursor-pointer" title="Ver Comentario" onClick={()=> onShowComment(visit.visitItem)}/>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
-                          <TbMapShare className="w-5 h-8 text-gray-500 mr-3 cursor-pointer"/>
+                          <TbMapShare className="w-5 h-8 text-gray-500 mr-3 cursor-pointer" title="Ver Mapa" onClick={()=> onShowMapComment(visit.visitItem)}/>
                         </td>
                       </tr>
                       )
@@ -264,6 +313,24 @@ const ActivityTable = () => {
           </div>
         </div>
       </div>
+      <ViewActivityModal
+        isOpen={isRegisterModalOpen}
+        onClose={closeRegisterModal}
+        visit={visit}
+        key={visit?.id}
+      />
+      <CommentModal
+        isOpen={isCommentModalOpen}
+        onClose={closeCommentModal}
+        comments={visitComment || []}
+        key={visitComment?.[0].id}
+      />
+      <MapsComponentComment
+        isOpen={isCommentMapModalOpen}
+        onClose={closeMapCommentModal}
+        visitComment={visitCommentMap || []}
+        key={visitCommentMap?.[0].id}
+      />
     </>
     );
   };

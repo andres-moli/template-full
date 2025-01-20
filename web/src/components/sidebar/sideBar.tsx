@@ -2,6 +2,10 @@ import { BiLogOut } from "react-icons/bi";
 import { FaHome, FaStore, FaBox, FaTags, FaClipboardList, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
+import { FaMapLocation } from "react-icons/fa6";
+import { FiMapPin } from "react-icons/fi";
+import { BsFillPinMapFill } from "react-icons/bs";
+import { PiMapPinLineFill } from "react-icons/pi";
 
 const SideBar = () => {
   const navigate = useNavigate()
@@ -37,11 +41,32 @@ const SideBar = () => {
           </li>
           <li>
             <a
-              href="#"
+              href="/report"
               className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
             >
               <FaClipboardList className="w-5 h-5 text-gray-500 mr-3" />
               Reportes
+            </a>
+          </li>
+        </ul>
+        <h2 className="mt-6 text-xs font-bold text-gray-800">Mapa</h2>
+        <ul className="mt-4 space-y-2">
+          <li>
+            <a
+              href="/routers"
+              className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              <FaMapLocation className="w-5 h-5 text-gray-500 mr-3" />
+              Rutas
+            </a>
+          </li>
+          <li>
+            <a
+              href="/location"
+              className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              <PiMapPinLineFill className="w-5 h-5 text-gray-500 mr-3" />
+              Ubicacion
             </a>
           </li>
         </ul>

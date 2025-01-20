@@ -203,7 +203,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
               onChange={handleChange}
               className={`mt-1 block w-full p-2 border ${errors.identificationType ? 'border-red-500' : 'border-gray-300'} rounded-md`}
             >
-              <option disabled defaultChecked>Seleccione un tipo</option>
+              <option disabled selected value={''}>Seleccione un tipo</option>
               {
                 typeDocumentsOptions.map((id)=> {
                   return (

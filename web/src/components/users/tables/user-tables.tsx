@@ -30,13 +30,10 @@ const UserTable: React.FC = () => {
   })
   const onEdit = (user: User) => {
     setUser(user)
+    openRegisterModal()
 
   }
-  useEffect(() => {
-    if (user) {
-      openRegisterModal()
-    }
-  }, [user]); 
+
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
