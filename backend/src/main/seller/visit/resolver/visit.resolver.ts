@@ -11,6 +11,8 @@ import { VisitDashboardModel } from '../dto/models/visit.model';
 import { UpdateStatusInput } from '../dto/inputs/update-status-visit.dto';
 import { User } from 'src/security/users/entities/user.entity';
 import { PubSub } from 'graphql-subscriptions';
+import { LocationInput, Message, MessageInput } from '../dto/inputs/location.visit.input';
+const pubSub = new PubSub();
 
 export const resolverStructure = CrudResolverStructure({
       ...serviceStructure,
@@ -50,6 +52,7 @@ export const resolverStructure = CrudResolverStructure({
 
 @Resolver((of) => Visit)
 export class VisitResolver extends CrudResolverFrom(resolverStructure) {
+      
       @AnyUser()
       @Query(() => VisitDashboardModel, {name: 'findAllVisitDashboard'})
       findAllVisitDashboard(
@@ -70,6 +73,72 @@ export class VisitResolver extends CrudResolverFrom(resolverStructure) {
       @Query(() => Float)
       async getHoursByVisit(@Args('id', { type: () => ID }) id: string,): Promise<number> {
         return await this.service.getVisitWithTotalHours(id);
+      }
+      private messages: Message[] = [];
+
+      // Consulta para obtener todos los mensajes
+      @Query(() => [Message])
+      getMessages() {
+        return this.messages;
+      }
+      @AnyUser()
+      // Mutación para enviar un mensaje
+      @Mutation(() => Message)
+      sendMessage(
+        @Args('messageInput') messageInput: MessageInput
+      ): Message {
+        const newMessage: Message = {
+          id: (this.messages.length + 1).toString(),
+          senderId: messageInput.senderId,
+          content: messageInput.content,
+          timestamp: new Date().toISOString(),
+        };
+        console.log(messageInput)
+        this.messages.push(newMessage);
+    
+        // Emitir el mensaje a todos los suscriptores (receptores)
+        pubSub.publish('messageReceived', { messageReceived: newMessage });
+    
+        return newMessage;
+      }
+      @AnyUser()
+      // Mutación para que un receptor responda a un mensaje
+      @Mutation(() => Message)
+      sendResponse(
+        @Args('messageInput') messageInput: MessageInput,
+        @Args('messageId') messageId: string
+      ): Message {
+        const originalMessage = this.messages.find((msg) => msg.id === messageId);
+        if (!originalMessage) {
+          throw new Error('Message not found');
+        }
+    
+        const responseMessage: Message = {
+          id: (this.messages.length + 1).toString(),
+          senderId: messageInput.senderId,
+          content: messageInput.content,
+          timestamp: new Date().toISOString(),
+        };
+        this.messages.push(responseMessage);
+    
+        // Emitir la respuesta a todos los suscriptores (receptores)
+        pubSub.publish('messageReceived', { messageReceived: responseMessage });
+    
+        return responseMessage;
+      }
+      @AnyUser()
+      // Suscripción para recibir mensajes en tiempo real
+      @Subscription(() => Message, {
+            filter: (payload, variables) => {
+                  // Aquí puedes hacer alguna validación si es necesario
+                  return payload.senderId === variables.senderId;
+                },
+                resolve: (payload) => {
+                  return payload;  // Asegúrate de que se esté retornando un objeto válido aquí
+                },
+      })
+      messageReceived() {
+        return pubSub.asyncIterator('messageReceived');
       }
 
 }

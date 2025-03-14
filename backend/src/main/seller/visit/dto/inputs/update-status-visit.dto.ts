@@ -1,5 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsDate, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsOptional, IsString } from "class-validator";
 import { StatusVisitEnum } from "../../emun/visit.emun";
 
 @InputType()
@@ -34,4 +34,10 @@ export class UpdateStatusInput {
     @Field(() => StatusVisitEnum)
     @IsString()
     status: StatusVisitEnum;
+
+
+    @Field(() => Boolean, {nullable: true})
+    @IsBoolean()
+    @IsOptional()
+    mocked?: boolean
 }

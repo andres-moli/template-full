@@ -10,6 +10,7 @@ import { VisitComentStatusEnum, VisitComentTypeEnum } from '../emun/visit-coment
 import { Visit } from '../../visit/entities/visit.entity';
 import moment from 'moment';
 import { date } from 'joi';
+import { FileInfo } from 'src/general/files/entities/file-info.entity';
 
 @Entity({ name:'cyt_visitComent'})
 @ObjectType()
@@ -47,7 +48,9 @@ export class VisitComent extends CrudEntity {
   @Column({ type: 'time', nullable: true })
   @Field(() => String   , { nullable: true })
   time?: Date; 
-
+  @Column({nullable: true})
+  @Field(() => Boolean, {nullable: true})
+  mocked?: boolean
   @Field(() => Date, { nullable: true })
   getFormattedTime(): string | null {
     // Si 'time' está disponible, formateamos con moment
@@ -56,6 +59,9 @@ export class VisitComent extends CrudEntity {
     }
     return null;
   }
+  @ManyToOne(()=> FileInfo, {nullable: true, lazy: true})
+  @Field(() => FileInfo, { nullable: true })
+  file?: FileInfo;
 
   @ManyToOne( () => Visit, (visit) => visit.visitItem ,{ lazy: true })  
   @Field(() => Visit) 

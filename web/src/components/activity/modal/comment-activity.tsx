@@ -44,6 +44,17 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, comments }
               <div className="mb-2 text-gray-600">
                 <p>{comment.description}</p>
               </div>
+              {
+                  comment.mocked
+                  &&
+                  (
+                    <span
+                    className={`px-2 py-1 text-xs rounded-md bg-orange-100 text-red-600`}
+                  >
+                    {'Ubicación falsa'}
+                  </span>
+                  )
+                }
               <div className="flex justify-end">
                 <button
                   onClick={() => onOpenMapComent(comment)}

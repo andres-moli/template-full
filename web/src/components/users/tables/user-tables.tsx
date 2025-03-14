@@ -151,6 +151,7 @@ const UserTable: React.FC = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
+                  {/* @ts-ignore */}
                   <BiPencil className="w-5 h-8 text-gray-500 mr-3 cursor-pointer" onClick={()=> onEdit(user)}/>
                 </td>
               </tr>

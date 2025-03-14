@@ -24,6 +24,12 @@ export class CreateVisitInput {
     @IsOptional()
     longitude?:string;
 
+
+    @Field(() => Boolean, {nullable: true})
+    @IsBoolean()
+    @IsOptional()
+    mocked: boolean
+
     @Field(() => Date)
     @IsDate()
     dateVisit: Date;

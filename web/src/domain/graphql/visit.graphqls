@@ -19,6 +19,7 @@ query Visits($where: FindVisitWhere, $orderBy: [FindVisitOrderBy!], $pagination:
     latitude
     longitude
     dateVisit
+    mocked
     status
     visitItem {
       id
@@ -31,6 +32,7 @@ query Visits($where: FindVisitWhere, $orderBy: [FindVisitOrderBy!], $pagination:
       latitude
       longitude
       dateFull
+      mocked
     }
     user {
       id
@@ -58,6 +60,7 @@ query VisitFindOneArg($where: FindVisitWhere) {
     latitude
     longitude
     dateVisit
+    mocked
     status
     visitItem {
       id
@@ -70,6 +73,7 @@ query VisitFindOneArg($where: FindVisitWhere) {
       latitude
       longitude
       dateFull
+      mocked
     }
     user {
       id
@@ -102,6 +106,7 @@ query Visit($visitId: ID!) {
     longitude
     dateVisit
     status
+    mocked
     visitItem {
       id
       createdAt
@@ -112,6 +117,7 @@ query Visit($visitId: ID!) {
       location
       latitude
       longitude
+      mocked
       dateFull
     }
   }

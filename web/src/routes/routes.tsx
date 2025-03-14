@@ -8,6 +8,8 @@ import ActivityPage from '../pages/Activity';
 import ReportPage from '../pages/report';
 import RoutersPage from '../pages/routers';
 import TimeRealPage from '../pages/timeReal';
+import MapOnePage from '../pages/Map';
+import MapMultiplePage from '../pages/Map/mapMulti';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -51,6 +53,19 @@ const AppRoutes: React.FC = () => {
           path="/location"
           element={
             <ProtectedRoute element={<TimeRealPage />} />
+          }
+        />
+        <Route
+          path="/locationFree/:lat/:lon"
+          element={
+            <MapOnePage/>
+          }
+        />
+        {/* /map/40.7128,-74.0060;34.0522,-118.2437;37.7749,-122.4194 */}
+        <Route
+          path="/locationMulti/:locations"
+          element={
+            <MapMultiplePage/>
           }
         />
         

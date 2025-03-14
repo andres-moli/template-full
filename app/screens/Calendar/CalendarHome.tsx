@@ -1,6 +1,6 @@
 // src/screens/CalendarHome.tsx
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; // Asegúrate de instalar esta dependencia
 import {useColor} from '../../Constants/Color';
@@ -36,6 +36,7 @@ const getRandomColor = (status: StatusVisitEnum) => {
 
 const CalendarScreen = ({navigation}) => {
   const {user} = useUser()
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
   const [events, setEvents] = useState([]);
   const [fechaInicio, setFechaInicio] = useState(dayjs().startOf('day').format('YYYY-MM-DD'));
@@ -53,12 +54,19 @@ const CalendarScreen = ({navigation}) => {
     },
     fetchPolicy: 'no-cache'
   })
+  // useEffect(() => {
+  //   setIsLoading((pre)=> !pre);
+  // }, [data,loading,fechaInicio,fechaFin]);
   const onDayPress = (day: { dateString: string }) => {
     setSelectedDate(day.dateString);
     setFechaInicio(day.dateString);
     setFechaFin(day.dateString)
   };
-
+  const renderEmptyList = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>{loading ? 'Cargando visitas...' : 'No se encontraron visitas'}</Text>
+    </View>
+  );
   return (
     <View style={styles.container}>
       <Calendar
@@ -76,6 +84,7 @@ const CalendarScreen = ({navigation}) => {
         data={data?.visits}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={renderEmptyList}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={()=>navigation.navigate('ActivityDetails', { visitId: item.id })} style={[styles.card, { backgroundColor: getRandomColor(item.status) }]}>
             <MaterialCommunityIcons name="calendar" size={24} color={color.primary} style={styles.icon} />
@@ -87,6 +96,13 @@ const CalendarScreen = ({navigation}) => {
           </TouchableOpacity>
         )}
         style={styles.eventList}
+        ListHeaderComponent={
+          loading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color={color.primary} />
+            </View>
+          ) : null
+        }
         contentContainerStyle={data?.visits.length === 0 && styles.emptyList}
       />
     </View>
@@ -98,6 +114,20 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: color.lightBeige,
+  },
+  loaderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  emptyContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#777',
   },
   selectedDateText: {
     fontSize: 20, // Aumentar el tamaño de la fuente

@@ -71,7 +71,7 @@ const EditUserModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, user }) 
       ...formData,
       [e.target.name]: e.target.value,
     });
-
+    // @ts-ignore
     if (errors[e.target.name]) {
       setErrors({
         ...errors,

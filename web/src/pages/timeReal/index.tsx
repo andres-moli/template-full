@@ -2,8 +2,21 @@ import React, { useState, useEffect } from 'react';
 import Card from "../../components/cards/Card";
 import MainLayout from "../../layouts/mainLayouts/mainLayouts";
 import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, ZoomControl } from "react-leaflet";
+import { gql, useSubscription } from '@apollo/client';
+const MESSAGE_RECEIVED = gql`
+  subscription {
+    messageReceived {
+      id
+      senderId
+      content
+      timestamp
+    }
+  }
+`;
 
 const TimeRealPage: React.FC = () => {
+  const { data, error, loading } = useSubscription(MESSAGE_RECEIVED);
+  console.log(error)
   // Datos iniciales de las coordenadas
   const initialRouters = [
     {
@@ -30,7 +43,14 @@ const TimeRealPage: React.FC = () => {
 
   // Estado de las rutas que se actualiza a medida que se mueve cada marcador
   const [routers, setRouters] = useState(initialRouters);
+  React.useEffect(() => {
+    console.log(",>>><",data)
 
+    if (data && data.messageReceived) {
+      console.log(data)
+      // setMessages(prevMessages => [...prevMessages, data.messageReceived]);
+    }
+  }, [data]);
   // Función para mover las coordenadas aleatoriamente
   const moveCoordinates = () => {
     const newRouters = routers.map((router) => {
@@ -68,6 +88,7 @@ const TimeRealPage: React.FC = () => {
         </Card>
         <Card>
           <MapContainer
+          // @ts-ignore
             center={routers[0].coordinate}
             zoom={13}
             style={{ height: '500px' }}
@@ -83,6 +104,7 @@ const TimeRealPage: React.FC = () => {
 
             {/* Marcadores de las visitas */}
             {routers?.map((router, index) => (
+              // @ts-ignore
               <Marker key={index} position={router.coordinate}>
                 <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent>
                   {router.name}

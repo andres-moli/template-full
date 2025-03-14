@@ -278,9 +278,11 @@ export type CreateVisitComentInput = {
   date?: InputMaybe<Scalars['DateTime']['input']>;
   dateFull?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  fileId?: InputMaybe<Scalars['String']['input']>;
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
+  mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status?: InputMaybe<VisitComentStatusEnum>;
   time?: InputMaybe<Scalars['DateTime']['input']>;
   type: VisitComentTypeEnum;
@@ -293,6 +295,7 @@ export type CreateVisitInput = {
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
+  mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status: StatusVisitEnum;
   userId: Scalars['String']['input'];
 };
@@ -568,6 +571,7 @@ export type FindVisitWhere = {
   client?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateFilter>;
   dateVisit?: InputMaybe<DateFilter>;
+  description?: InputMaybe<StringFilter>;
   status?: InputMaybe<StringFilter>;
   user?: InputMaybe<StringFilter>;
 };
@@ -643,6 +647,19 @@ export type Group = {
   notificationConfig?: Maybe<NotificationConfig>;
   updatedAt: Scalars['DateTime']['output'];
   users?: Maybe<Array<User>>;
+};
+
+export type Message = {
+  __typename?: 'Message';
+  content?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['String']['output']>;
+  senderId?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['String']['output']>;
+};
+
+export type MessageInput = {
+  content: Scalars['String']['input'];
+  senderId: Scalars['String']['input'];
 };
 
 export type MetadataPagination = {
@@ -727,6 +744,8 @@ export type Mutation = {
   resetPassword: User;
   resetSuperAdmin: User;
   sendCodeDoubleVerification: Scalars['String']['output'];
+  sendMessage: Message;
+  sendResponse: Message;
   signInAdmin: AuthResponse;
   signUpWithDocument: AuthResponse;
   signUpWithEmail: AuthResponse;
@@ -1003,6 +1022,17 @@ export type MutationResetPasswordArgs = {
 
 export type MutationSendCodeDoubleVerificationArgs = {
   sendDoubleVerificationInput: SendDoubleVerificationInput;
+};
+
+
+export type MutationSendMessageArgs = {
+  messageInput: MessageInput;
+};
+
+
+export type MutationSendResponseArgs = {
+  messageId: Scalars['String']['input'];
+  messageInput: MessageInput;
 };
 
 
@@ -1320,6 +1350,7 @@ export type Query = {
   findOneFacturaClienteByCode: FindOneFacturaClienteByCode;
   functionalities: FunctionalityModel;
   getHoursByVisit: Scalars['Float']['output'];
+  getMessages: Array<Message>;
   group: Group;
   groups: Array<Group>;
   groupsCount: MetadataPagination;
@@ -1953,6 +1984,11 @@ export type StringFilter = {
   _startswith?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  messageReceived: Message;
+};
+
 export enum TypeClientEnum {
   ClienteFinal = 'CLIENTE_FINAL',
   Distribuidor = 'DISTRIBUIDOR',
@@ -2141,6 +2177,7 @@ export type UpdateStatusInput = {
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
+  mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status: StatusVisitEnum;
 };
 
@@ -2173,6 +2210,7 @@ export type UpdateUserInput = {
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['String']['input']>;
   secondSurname?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<UserStatusTypes>;
   type?: InputMaybe<UserTypes>;
   typeWoker?: InputMaybe<TypeWorker>;
 };
@@ -2187,10 +2225,12 @@ export type UpdateVisitComentInput = {
   date?: InputMaybe<Scalars['DateTime']['input']>;
   dateFull?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  fileId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
+  mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status?: InputMaybe<VisitComentStatusEnum>;
   time?: InputMaybe<Scalars['DateTime']['input']>;
   type?: InputMaybe<VisitComentTypeEnum>;
@@ -2204,6 +2244,7 @@ export type UpdateVisitInput = {
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
+  mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status?: InputMaybe<StatusVisitEnum>;
   userId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2232,6 +2273,7 @@ export type User = {
   id: Scalars['ID']['output'];
   identificationNumber?: Maybe<Scalars['String']['output']>;
   identificationType?: Maybe<UserDocumentTypes>;
+  isActivityNow: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   legalRepresentativeIdentificationNumber?: Maybe<Scalars['String']['output']>;
   legalRepresentativeIdentificationType?: Maybe<UserDocumentTypes>;
@@ -2305,6 +2347,7 @@ export type Visit = {
   latitude?: Maybe<Scalars['String']['output']>;
   location?: Maybe<Scalars['String']['output']>;
   longitude?: Maybe<Scalars['String']['output']>;
+  mocked?: Maybe<Scalars['Boolean']['output']>;
   status: StatusVisitEnum;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
@@ -2318,11 +2361,13 @@ export type VisitComent = {
   dateFull?: Maybe<Scalars['DateTime']['output']>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description: Scalars['String']['output'];
+  file?: Maybe<FileInfo>;
   getFormattedTime?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   latitude?: Maybe<Scalars['String']['output']>;
   location?: Maybe<Scalars['String']['output']>;
   longitude?: Maybe<Scalars['String']['output']>;
+  mocked?: Maybe<Scalars['Boolean']['output']>;
   time?: Maybe<Scalars['String']['output']>;
   type: VisitComentTypeEnum;
   updatedAt: Scalars['DateTime']['output'];
@@ -2425,7 +2470,7 @@ export type VisitFindOneArgQueryVariables = Exact<{
 }>;
 
 
-export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
+export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
 
 export type FinishVisitMutationVariables = Exact<{
   updateStatusInput: UpdateStatusInput;
@@ -2446,7 +2491,7 @@ export type VisitQueryVariables = Exact<{
 }>;
 
 
-export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null }> } };
+export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }> } };
 
 
 export const SigninDocument = gql`
@@ -2755,6 +2800,18 @@ export const VisitFindOneArgDocument = gql`
       latitude
       longitude
       dateFull
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
     user {
       id
@@ -2889,6 +2946,18 @@ export const VisitDocument = gql`
       latitude
       longitude
       dateFull
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
   }
 }

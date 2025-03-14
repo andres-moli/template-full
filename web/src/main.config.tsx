@@ -4,14 +4,23 @@ import { ApolloClient, HttpLink, from } from '@apollo/client/core';
 import { InMemoryCache } from '@apollo/client/cache';
 import { onError } from "@apollo/client/link/error";
 import { setContext } from '@apollo/client/link/context';
-
+import { WebSocketLink } from '@apollo/client/link/ws';
 // apollo client ----------------------------------------------
 export const httpLink = new HttpLink({
     uri: import.meta.env.VITE_APP_GRAPH + "graphql",
     credentials: 'same-origin',
     headers: { "x_api_key_cs3": import.meta.env.VITE_APP_PUBLIC_HEADER, }
 })
-
+// WebSocketLink para las suscripciones
+const wsLink = new WebSocketLink({
+    uri: import.meta.env.VITE_APP_GRAPH.replace("https", "wss") + "graphql", // Cambia http por ws para WebSockets
+    options: {
+      reconnect: true, // Intentar reconectar si la conexión se cae
+    },
+    connectionParams: {
+        Authorization: `Bearer ${import.meta.env.VITE_APP_KEY_COOKIE_SESSION}`,
+      },
+  });
 const authLink = setContext((_, { headers }) => {
     // get the authentication token from local storage if it exists
     const cookie = Cookies.get(import.meta.env.VITE_APP_KEY_COOKIE_SESSION)
@@ -53,7 +62,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 export const apolloClient = new ApolloClient({
     name: "template",
     version: "0.0.0",
-    link: from([authLink, errorLink, httpLink]),
+    link: from([authLink, errorLink, httpLink, wsLink]),
     cache: new InMemoryCache(
         // {
         //     dataIdFromObject(responseObject,) { // add an id to the query cache on apollo client

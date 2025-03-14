@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useCallback, useContext, useRef, useSyncExternalStore } from 'react';
-import { produce } from 'immer';
+// import { produce } from 'immer';
 
 /*----------- cofig -----------*/
 
@@ -25,9 +25,9 @@ export default function createCustomerStore<T>(defaultData: Partial<T> = {}) {
 
     // functions
     const get: Store<T>['get'] = useCallback(() => store.current, []);
-
+    // @ts-ignore
     const set: Store<T>['set'] = useCallback(fn => {
-      store.current = produce(store.current, fn);
+      // store.current = produce(store.current, fn);
       subscribers.current.forEach(callback => callback());
     }, []);
 

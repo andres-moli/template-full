@@ -1,16 +1,15 @@
 import Cookies from 'js-cookie'
-import { produce } from "immer"
+// import { produce } from "immer"
 import { homeEndpoints } from '../generalApi'
-import { IGeneral, setter } from './general.store'
-import { loginSchemaType } from '@/pages/auth/controller/schemas'
-import { ToastyErrorGraph } from '@/lib/utils'
+// import { loginSchemaType } from '@/pages/auth/controller/schemas'
+import { ToastyErrorGraph } from '../../lib/utils'
 
 /**
  * Login action and set user's data and its token
  * @param data 
  * @returns 
  */
-export const login = async(data: loginSchemaType) => {
+export const login = async(data: any) => {
   try {
     const res = await homeEndpoints.loginUser({
       signinInput: {
@@ -22,10 +21,10 @@ export const login = async(data: loginSchemaType) => {
     Cookies.set(import.meta.env.VITE_APP_KEY_COOKIE_SESSION, res?.signin?.token)
     Cookies.set(import.meta.env.VITE_APP_KEY_COOKIE_USER, JSON.stringify(res.signin.user))
 
-    setter(produce((draft: IGeneral) => {
-      draft.isLogged = true
-      draft.userInfo = res.signin.user
-    }))
+    // setter(produce((draft: IGeneral) => {
+    //   draft.isLogged = true
+    //   draft.userInfo = res.signin.user
+    // }))
 
     return true
   } catch (error) {

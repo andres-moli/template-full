@@ -33,6 +33,10 @@ export class CreateVisitComentInput {
     @IsDate()
     date?: Date;
 
+    @Field(() => Boolean, {nullable: true})
+    @IsBoolean()
+    @IsOptional()
+    mocked: boolean
     
     @Field(() => Date, {nullable: true})
     @IsOptional()
@@ -45,7 +49,12 @@ export class CreateVisitComentInput {
     @IsDate()
     time?: Date;
     
-  
+    @Field(() => String, {nullable: true})
+    @IsString()
+    @IsOptional()
+    fileId?: string
+
+
     @Field(() => VisitComentStatusEnum, {nullable: true})
     @IsString()
     @IsOptional()

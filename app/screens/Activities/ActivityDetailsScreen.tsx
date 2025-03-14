@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicatorComponent, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicatorComponent, ActivityIndicator, RefreshControl, Platform, Linking, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {useColor} from '../../Constants/Color';
 import NoCommentsAnimation from '../../components/Amination/NotComentsAnimation';
@@ -10,6 +10,7 @@ import { useVisitQuery, VisitComent, VisitComentTypeEnum } from '../../graphql/g
 import { formatWithCommonFormats } from '../../Lib/MangerDate';
 import dayjs from 'dayjs';
 import { translateStatusVisit } from '../../Lib';
+import ImageField from './imagenComponente';
 const { color } = useColor();
 
 
@@ -43,6 +44,24 @@ const ActivityDetailsScreen = ({route, navigation}) => {
     "longitude": data.visit.longitude,
     "routers": routers
   }
+  const generateGoogleMapsURL = () => {
+    if(Platform.OS === 'android'){
+      const center = `ll=${routers[0].latitude},${routers[0].longitude}`;
+
+      // Crear un enlace con múltiples marcadores
+      const markers = routers
+        .map(point => `${point.latitude},${point.longitude}`)
+        .join(';');
+    
+      const url = `https://4tpbvf4h-5173.use.devtunnels.ms/locationMulti/${markers}`;
+      navigation.navigate('MapAndoridMulti',  {link: url})
+      return
+    }
+    // Convertir la lista de rutas a un string de URL
+    navigation.navigate('MapComponentMultiple',  {content: jsonContentString})
+    // Generar el enlace de Google Maps con la ruta
+
+  };
   const jsonContentString = JSON.stringify(jsonContent)
   const renderComment = ({ item }: {item: VisitComent}) => (
     <View style={styles.commentCard}>
@@ -59,7 +78,18 @@ const ActivityDetailsScreen = ({route, navigation}) => {
         <Text style={styles.commentMessage}>{item.description}</Text>
         <View style={styles.commentFooter}>
           <Text style={styles.commentValue}>{item.type}</Text>
-          <Text style={styles.commentValue} onPress={()=>  navigation.navigate('MapScreen',{latitude: item.latitude, longitude: item.longitude})}>Ver mapa</Text>
+          {
+            item.file && (
+              <ImageField value={item.file.url} key={item.id}></ImageField>
+            )
+          }
+          {
+            Platform.OS === 'android'
+            ?
+            <Text style={styles.commentValue} onPress={()=> navigation.navigate('MapAndoridComponent',{latitude: item.latitude, longitude: item.longitude})}>Ver mapa</Text>
+            :
+            <Text style={styles.commentValue} onPress={()=> navigation.navigate('MapScreen',{latitude: item.latitude, longitude: item.longitude})}>Ver mapa</Text>
+          }
         </View>
       </View>
     </View>
@@ -96,7 +126,7 @@ const ActivityDetailsScreen = ({route, navigation}) => {
           <Text style={styles.value}>{translateStatusVisit(data.visit.status)}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={[styles.value, {color: color.primary}]} onPress={()=>  navigation.navigate('MapComponentMultiple',  {content: jsonContentString})}>{'VER MAPA DE LAS RUTAS'}</Text>
+          <Text style={[styles.value, {color: color.primary}]} onPress={generateGoogleMapsURL }>{'VER MAPA DE LAS RUTAS'}</Text>
         </View>
       </View>
       <Text style={styles.headerText}>Comentarios realizados...</Text>
@@ -135,6 +165,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: color.lightPink,
     marginBottom: 4,
+  },
+  image: {
+    width: '100%',
+    height: 100,
+    borderRadius: 5,
+    marginTop: 5,
   },
   value: {
     fontSize: 14,

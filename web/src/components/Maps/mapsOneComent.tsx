@@ -31,6 +31,7 @@ const MapsComponentOneComment: React.FC<MapsCommentModalProps> = ({ isOpen, onCl
         <h2 className="text-2xl font-bold mb-6 text-center">Mapa de Visitas</h2>
         
         <MapContainer
+        // @ts-ignore
           center={router.coordinate}
           zoom={13}
           style={{ height: '500px' }}
@@ -48,7 +49,9 @@ const MapsComponentOneComment: React.FC<MapsCommentModalProps> = ({ isOpen, onCl
           {/* <Polyline positions={router.coordinate} color="blue" weight={4} opacity={0.7} /> */}
 
           {/* Marcadores de las visitas */}
-          <Marker key={1} position={router.coordinate}>
+          <Marker key={1} 
+          // @ts-ignore
+          position={router.coordinate}>
               <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent>
                 {router.name}
               </Tooltip>

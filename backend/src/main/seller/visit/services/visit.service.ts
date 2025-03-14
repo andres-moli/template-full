@@ -49,11 +49,20 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
 
 
   async beforeCreate(context:IContext,repository: Repository<Visit>, entity: Visit, createInput: CreateVisitInput): Promise<void> {
+    
+    if(await this.findActivityNowUser(context, createInput.userId)){
+      throw new Error('Ya existe una actividad en proceso')
+    }
     entity.status = StatusVisitEnum.initiated
     // entity.client = await this.clientService.findOne(context,createInput.clientId, true);
     entity.user = await this.usersService.findOne(context,createInput.userId, true);
     entity.dateVisit = createInput.dateVisit
     // entity.type = await this.visitTypeService.findOne(context,createInput.typeId,true);
+  }
+  async beforeUpdate(context: IContext, repository: Repository<Visit>, entity: Visit, updateInput: UpdateVisitInput): Promise<void> {
+    if(updateInput.status === entity.status){
+      throw new Error(`La actividad ya se encuentra en el estado que estas intentando cambiar [${updateInput.status}]`)
+    }
   }
   async calculateTotalHours(visit: Visit): Promise<number> {
     const manager = this.getRepository({user: undefined}).manager
@@ -117,7 +126,7 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
     //   entity.status = StatusVisitEnum.confirmed
     //   await repository.save(entity)
     // }
-    await this.visitComentService.create(context,{
+    const comment = await this.visitComentService.create(context,{
       type: VisitComentTypeEnum.INICIO,
       visitId: entity.id,
       description: entity.description,
@@ -127,15 +136,18 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
       longitude: entity.longitude,
       dateFull: entity.dateVisit,
       time: entity.dateVisit,
+      mocked: entity.mocked
     })
-
+    if(entity.mocked){
+      this.sendMailMockedFail(context,comment)
+    }
   }
   async finishVisit(context: IContext, updateInput: UpdateStatusInput){
     const repository = this.getRepository(context);
     const entity = await this.findOne(context,updateInput.id,true);
     entity.status = StatusVisitEnum.realized
     const responseEntity = await repository.save(entity);
-    await this.visitComentService.create(context,{
+    const comment = await this.visitComentService.create(context,{
       type: VisitComentTypeEnum.FIN,
       visitId: entity.id,
       description: updateInput.description,
@@ -145,7 +157,11 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
       longitude: updateInput.longitude,
       dateFull: moment(moment(updateInput.dateVisit).format('YYYY-MM-DD HH:mm')).local().toDate(),
       time: updateInput.dateVisit,
+      mocked: updateInput.mocked
     })
+    if(updateInput.mocked){
+      this.sendMailMockedFail(context,comment)
+    }
     return responseEntity
   }
   async sendWhastapp(number: string, entity: Visit){
@@ -236,14 +252,22 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
       let contextE = {
         userName: (await entity.user).name,
         visitDate: moment(entity.dateVisit).format('YYYY-MM-DD'),
-        // clientName: (await entity.client).name,
-        // clientAddress: await (entity.client).address || "SIN DIRECCION",
         visitorName: (await entity.user).name,
         statusVisit: entity.status,
-        // typeVisit: (await entity.type)?.name
+        comment: entity.status
       }
       await this.mailService.sendMail((await entity.user).email,"Visita Confirmada", "confirm",contextE)
     }
+  }
+  async sendMailMockedFail(context: IContext, entity: VisitComent){
+    let contextE = {
+      userName: (await entity.user).name,
+      visitDate: moment(entity.createdAt).format('YYYY-MM-DD'),
+      comment: entity.description,
+      latitude: entity.latitude,
+      longitude: entity.longitude
+    }
+    await this.mailService.sendMail('andresmolinag2018@gmail.com',"Alerta: Ubicación Incorrecta Reportada", "locationMocked",contextE)
   }
   async findAllVisitDashboard(context: IContext){
     const earrings = await this.find(context, {

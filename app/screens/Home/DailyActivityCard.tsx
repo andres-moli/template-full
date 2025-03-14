@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image, Keyboard, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image, Keyboard, Alert, ActivityIndicator, Platform } from 'react-native';
 import {useColor} from '../../Constants/Color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
@@ -10,15 +10,21 @@ import { StatusVisitEnum, useCreateVisitComentMutation, useCreateVisitMutation, 
 import useUser from '../../context/useUser';
 import { ToastyErrorGraph } from '../../graphql';
 import dayjs, { Dayjs } from 'dayjs';
+import handleUploadImage from '../../Lib/uptloadFile';
+import UploadProgressModal from './updload';
+import ImageField from '../Activities/imagenComponente';
 const { color } = useColor();
-
+const ERROR_MOCK_LOCATION = 'Detectamos que la ubicación es falsa. Por favor, verifica tu conexión o intenta con una ubicación válida.'
 const DailyActivityCard = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [loading, setLoading] = useState(false); // Estado para cargar
   const [loadingF, setLoadingF] = useState(false); // Estado para cargar
   const [loadingC, setLoadingC] = useState(false); // Estado para cargar
-
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [comment, setComment] = useState('');
+  const [fileUri, setFileuri] = useState();
+
   const [activities, setActivities] = useState<{ text: string; timestamp: string; image?: string; file?: string }[]>([]);
   const [isDayStarted, setIsDayStarted] = useState(false); // Estado para controlar si el día ha comenzado
   const [createVisit] = useCreateVisitMutation();
@@ -62,7 +68,8 @@ const DailyActivityCard = () => {
                       userId: user.id || '',
                       description: comment,
                       latitude: location.coords.latitude.toString(),
-                      longitude: location.coords.longitude.toString()
+                      longitude: location.coords.longitude.toString(),
+                      mocked: location.mocked
                     }
                   }
                 })
@@ -113,7 +120,8 @@ const DailyActivityCard = () => {
                       id: data?.visitFindOneArg?.id || '',
                       description: comment,
                       latitude: location.coords.latitude.toString(),
-                      longitude: location.coords.longitude.toString()
+                      longitude: location.coords.longitude.toString(),
+                      mocked: location.mocked
                     }
                   }
                 })
@@ -148,6 +156,19 @@ const DailyActivityCard = () => {
           isPreferred: true,
           text: 'SI',
           onPress:  async ()=> {
+            let fileId: undefined | any = undefined;
+            if(fileUri){
+              const file = {
+                uri: Platform.OS === 'ios' ? fileUri.uri.replace('file://', '') : fileUri.uri,
+                name: `test-file.jpeg`,
+                type: fileUri.mimeType,
+              }
+              setIsUploading(true);
+              setUploadProgress(0);
+              const dataFile = await handleUploadImage(file,setUploadProgress)
+              setIsUploading(false);
+              fileId = dataFile?.id
+            }
             const { status } = await Location.requestForegroundPermissionsAsync(); // Solicitar permisos de ubicación
             if (status === 'granted') {
               const location = await Location.getCurrentPositionAsync({}); // Obtener la ubicación actual
@@ -164,7 +185,9 @@ const DailyActivityCard = () => {
                       description: comment,
                       type: VisitComentTypeEnum.Intermedio,
                       latitude: location.coords.latitude.toString(),
-                      longitude: location.coords.longitude.toString()
+                      longitude: location.coords.longitude.toString(),
+                      mocked: location.mocked,
+                      fileId: fileId
                     }
                   }
                 })
@@ -192,7 +215,45 @@ const DailyActivityCard = () => {
       ]
     )
   }
-  const navigator = useNavigation()
+  const handleImagePicker = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const file = result.assets[0];
+      setFileuri(file)
+    }
+  };
+
+  const handleDocumentPicker = async () => {
+    const result = await DocumentPicker.getDocumentAsync({});
+    if (result.type === 'success') {
+      setFileuri(result)
+    }
+  };
+  const handleCameraPicker = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      const file = result.assets[0];
+  
+      // if (!isValidFileSize(file.fileSize)) {
+      //   alert(`El archivo no debe superar los ${MAX_FILE_SIZE_MB}MB.`);
+      //   return;
+      // }
+  
+      setFileuri(file);
+    }
+  };
+  console.log(data?.visitFindOneArg?.visitItem)
   return (
     <View style={styles.card}>
       <TouchableOpacity onPress={toggleOpen} style={styles.header}>
@@ -202,7 +263,7 @@ const DailyActivityCard = () => {
         <MaterialCommunityIcons name={isOpen ? 'arrow-up-drop-circle' : 'arrow-down-drop-circle'} size={20} color={color.primary} />
         {/*<MaterialCommunityIcons onPress={()=> {navigator.navigate("ActivityDetails", {id:'123'})}} name='chevron-triple-right' size={26} color={color.coral} />*/}
       </TouchableOpacity>
-      
+      <UploadProgressModal visible={isUploading} progress={uploadProgress} />
       {isOpen && (
         <View style={styles.content}>
           <TextInput
@@ -217,6 +278,17 @@ const DailyActivityCard = () => {
             (data?.visitFindOneArg)
             ?
             <>
+              <View style={styles.iconContainer}>
+                <TouchableOpacity onPress={handleImagePicker} style={styles.iconButton}>
+                  <MaterialCommunityIcons name="image-plus" color={color.primary} size={28} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleCameraPicker} style={styles.iconButton}>
+                  <MaterialCommunityIcons name="camera" color={color.primary} size={28} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> setFileuri(undefined)} style={styles.iconButton}>
+                  <MaterialCommunityIcons name="delete-restore" color={color.primary} size={28} />
+                </TouchableOpacity>
+              </View>
             <TouchableOpacity disabled={loading || loadingC} onPress={handleCommentAdd} style={styles.commentDayButton}>
             {loading || loadingC? (
                 <ActivityIndicator size="small" color="#fff" />
@@ -241,7 +313,7 @@ const DailyActivityCard = () => {
               )}
             </TouchableOpacity>
           }
-
+  
           <>
             <ScrollView style={styles.activityList} showsVerticalScrollIndicator={false}>
               {data?.visitFindOneArg?.visitItem.map((activity, index) => (
@@ -249,8 +321,11 @@ const DailyActivityCard = () => {
                   <Text style={styles.activityText}>• {activity.description} 
                   <Text style={styles.timestamp}>({dayjs(activity.dateFull).format('HH:mm:ss')})</Text></Text>
                   <TouchableOpacity onPress={() => console.log(index)}>
-                    <MaterialCommunityIcons name="pencil" color={color.primary} size={20} />
+                    <MaterialCommunityIcons name="comment-account" color={color.primary} size={20} />
                   </TouchableOpacity>
+                  {activity.file && (
+                    <ImageField value={activity.file.url} key={activity.id}></ImageField>
+                  )}
                 </View>
               ))}
             </ScrollView>
@@ -326,7 +401,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     marginBottom: 10,
   },
   activityList: {

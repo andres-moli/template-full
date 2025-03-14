@@ -279,6 +279,7 @@ export type CreateVisitComentInput = {
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
+  mocked?: InputMaybe<Scalars['Boolean']>;
   status?: InputMaybe<VisitComentStatusEnum>;
   time?: InputMaybe<Scalars['DateTime']>;
   type: VisitComentTypeEnum;
@@ -291,6 +292,7 @@ export type CreateVisitInput = {
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
+  mocked?: InputMaybe<Scalars['Boolean']>;
   status: StatusVisitEnum;
   userId: Scalars['String'];
 };
@@ -644,6 +646,19 @@ export type Group = {
   users?: Maybe<Array<User>>;
 };
 
+export type Message = {
+  __typename?: 'Message';
+  content?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  senderId?: Maybe<Scalars['String']>;
+  timestamp?: Maybe<Scalars['String']>;
+};
+
+export type MessageInput = {
+  content: Scalars['String'];
+  senderId: Scalars['String'];
+};
+
 export type MetadataPagination = {
   __typename?: 'MetadataPagination';
   currentPage?: Maybe<Scalars['Int']>;
@@ -726,6 +741,8 @@ export type Mutation = {
   resetPassword: User;
   resetSuperAdmin: User;
   sendCodeDoubleVerification: Scalars['String'];
+  sendMessage: Message;
+  sendResponse: Message;
   signInAdmin: AuthResponse;
   signUpWithDocument: AuthResponse;
   signUpWithEmail: AuthResponse;
@@ -1002,6 +1019,17 @@ export type MutationResetPasswordArgs = {
 
 export type MutationSendCodeDoubleVerificationArgs = {
   sendDoubleVerificationInput: SendDoubleVerificationInput;
+};
+
+
+export type MutationSendMessageArgs = {
+  messageInput: MessageInput;
+};
+
+
+export type MutationSendResponseArgs = {
+  messageId: Scalars['String'];
+  messageInput: MessageInput;
 };
 
 
@@ -1319,6 +1347,7 @@ export type Query = {
   findOneFacturaClienteByCode: FindOneFacturaClienteByCode;
   functionalities: FunctionalityModel;
   getHoursByVisit: Scalars['Float'];
+  getMessages: Array<Message>;
   group: Group;
   groups: Array<Group>;
   groupsCount: MetadataPagination;
@@ -1952,6 +1981,11 @@ export type StringFilter = {
   _startswith?: InputMaybe<Scalars['String']>;
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  messageReceived: Message;
+};
+
 export enum TypeClientEnum {
   ClienteFinal = 'CLIENTE_FINAL',
   Distribuidor = 'DISTRIBUIDOR',
@@ -2140,6 +2174,7 @@ export type UpdateStatusInput = {
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
+  mocked?: InputMaybe<Scalars['Boolean']>;
   status: StatusVisitEnum;
 };
 
@@ -2191,6 +2226,7 @@ export type UpdateVisitComentInput = {
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
+  mocked?: InputMaybe<Scalars['Boolean']>;
   status?: InputMaybe<VisitComentStatusEnum>;
   time?: InputMaybe<Scalars['DateTime']>;
   type?: InputMaybe<VisitComentTypeEnum>;
@@ -2204,6 +2240,7 @@ export type UpdateVisitInput = {
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
+  mocked?: InputMaybe<Scalars['Boolean']>;
   status?: InputMaybe<StatusVisitEnum>;
   userId?: InputMaybe<Scalars['String']>;
 };
@@ -2306,6 +2343,7 @@ export type Visit = {
   latitude?: Maybe<Scalars['String']>;
   location?: Maybe<Scalars['String']>;
   longitude?: Maybe<Scalars['String']>;
+  mocked?: Maybe<Scalars['Boolean']>;
   status: StatusVisitEnum;
   updatedAt: Scalars['DateTime'];
   user: User;
@@ -2324,6 +2362,7 @@ export type VisitComent = {
   latitude?: Maybe<Scalars['String']>;
   location?: Maybe<Scalars['String']>;
   longitude?: Maybe<Scalars['String']>;
+  mocked?: Maybe<Scalars['Boolean']>;
   time?: Maybe<Scalars['String']>;
   type: VisitComentTypeEnum;
   updatedAt: Scalars['DateTime'];
@@ -2445,14 +2484,14 @@ export type VisitsQueryVariables = Exact<{
 }>;
 
 
-export type VisitsQuery = { __typename?: 'Query', visits: Array<{ __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } }>, visitsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type VisitsQuery = { __typename?: 'Query', visits: Array<{ __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, mocked?: boolean | null, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, mocked?: boolean | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } }>, visitsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type VisitFindOneArgQueryVariables = Exact<{
   where?: InputMaybe<FindVisitWhere>;
 }>;
 
 
-export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
+export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, mocked?: boolean | null, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, mocked?: boolean | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
 
 export type FinishVisitMutationVariables = Exact<{
   updateStatusInput: UpdateStatusInput;
@@ -2473,7 +2512,7 @@ export type VisitQueryVariables = Exact<{
 }>;
 
 
-export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null }> } };
+export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, mocked?: boolean | null, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, mocked?: boolean | null, dateFull?: any | null }> } };
 
 export const UserFragmentFragmentDoc = gql`
     fragment userFragment on User {
@@ -3034,6 +3073,7 @@ export const VisitsDocument = gql`
     latitude
     longitude
     dateVisit
+    mocked
     status
     visitItem {
       id
@@ -3046,6 +3086,7 @@ export const VisitsDocument = gql`
       latitude
       longitude
       dateFull
+      mocked
     }
     user {
       id
@@ -3105,6 +3146,7 @@ export const VisitFindOneArgDocument = gql`
     latitude
     longitude
     dateVisit
+    mocked
     status
     visitItem {
       id
@@ -3117,6 +3159,7 @@ export const VisitFindOneArgDocument = gql`
       latitude
       longitude
       dateFull
+      mocked
     }
     user {
       id
@@ -3235,6 +3278,7 @@ export const VisitDocument = gql`
     longitude
     dateVisit
     status
+    mocked
     visitItem {
       id
       createdAt
@@ -3245,6 +3289,7 @@ export const VisitDocument = gql`
       location
       latitude
       longitude
+      mocked
       dateFull
     }
   }

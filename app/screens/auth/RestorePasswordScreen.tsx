@@ -25,7 +25,7 @@ const RestorePasswordScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/icon.png')}
+        source={require('../../assets/logo.png')}
         style={styles.logo}
       />
       <Text style={styles.title}>Restaurar contraseña</Text>
@@ -88,8 +88,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   logo: {
-    width: 110,
-    height: 100,
     marginBottom: 20,
   },
   title: {

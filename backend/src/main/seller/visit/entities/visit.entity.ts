@@ -29,6 +29,10 @@ export class Visit extends CrudEntity {
   @Field(() => String, {nullable: true})
   longitude?: string
 
+  @Column({nullable: true})
+  @Field(() => Boolean, {nullable: true})
+  mocked?: boolean
+
   @Column({type: 'timestamp'})
   @Index()
   @Field(() => Date)

@@ -30,6 +30,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SESSION_COOKIE_KEY } from '../graphql/client';
 import MapComponent from '../screens/Map/Map';
 import MapComponentMultiple from '../screens/Map/MapMultiple';
+import MapAndoridComponent from '../screens/Map/MapAndroid';
+import OpenLinkInApp from '../screens/dummy';
+import MapAndoridScreen from '../screens/Map/MapAndroid';
 const { color } = useColor();
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -302,6 +305,64 @@ const Navigator = () => {
               marginRight: 0, // Elimina margen a la derecha para centrar mejor
             },
             title: 'Mapa',
+            headerBackTitleVisible: true
+          })}
+        />
+         <Stack.Screen
+          name="MapAndoridComponent"
+          component={OpenLinkInApp}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: color.primary,
+            },
+            headerLeft: () => (
+              <MaterialCommunityIcons
+                name="arrow-left" // Nombre del ícono
+                size={30} // Tamaño del ícono
+                color="black" // Color del ícono
+                style={{ marginLeft: 10 }} // Espaciado
+                onPress={() => navigation.goBack()} // Acción al presionar el ícono
+              />
+            ),
+            headerTintColor: color.lightBeige,
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 15, // Aumenta el tamaño de la fuente
+              textAlign: 'center', // Centra el texto
+              marginLeft: 0, // Elimina margen a la izquierda para centrar mejor
+              marginRight: 0, // Elimina margen a la derecha para centrar mejor
+            },
+            title: 'Mapa de comentario',
+            headerBackTitleVisible: true
+          })}
+        />
+        <Stack.Screen
+          name="MapAndoridMulti"
+          component={MapAndoridScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: color.primary,
+            },
+            headerLeft: () => (
+              <MaterialCommunityIcons
+                name="arrow-left" // Nombre del ícono
+                size={30} // Tamaño del ícono
+                color="black" // Color del ícono
+                style={{ marginLeft: 10 }} // Espaciado
+                onPress={() => navigation.goBack()} // Acción al presionar el ícono
+              />
+            ),
+            headerTintColor: color.lightBeige,
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 15, // Aumenta el tamaño de la fuente
+              textAlign: 'center', // Centra el texto
+              marginLeft: 0, // Elimina margen a la izquierda para centrar mejor
+              marginRight: 0, // Elimina margen a la derecha para centrar mejor
+            },
+            title: 'Mapa Comentarios Actividad',
             headerBackTitleVisible: true
           })}
         />

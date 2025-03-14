@@ -15,19 +15,19 @@
       "supportsTablet": true
     },
     "android": {
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyDp3gBRShPpTch0Z5gpVQIcDVJ1RSKSIKM"
-        }
-      }
+      "package": "com.amoli23.pctronic"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "74e76ed6-1ea5-4065-a662-302cfe9669d1"
+      }
     }
   }
 }

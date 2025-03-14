@@ -64,6 +64,18 @@ query VisitFindOneArg($where: FindVisitWhere) {
       latitude
       longitude
       dateFull
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
     user {
       id
@@ -107,6 +119,18 @@ query Visit($visitId: ID!) {
       latitude
       longitude
       dateFull
+            file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
   }
 }

@@ -8,6 +8,7 @@ const { width, height } = Dimensions.get('window');
 const MapComponentMultiple = ({ route }) => {
   const { content } = route.params;
   const {latitude, longitude, routers } = JSON.parse(content)
+  console.log({latitude, longitude, routers })
   const [region, setRegion] = useState({
     latitude: latitude, // Coordenadas iniciales
     longitude: longitude,
@@ -41,9 +42,11 @@ const MapComponentMultiple = ({ route }) => {
           showsCompass={true} // Muestra la brújula
           loadingEnabled={true}
           mapType={mapType} // Cambia el tipo de mapa (satélite o estándar)
+          // provider="google"
+          // googleMapId='3bd1b033cbce18dc'
         >
           {/* Marcadores de cada punto de la ruta */}
-          {routers.map((point, index) => (
+          {routers?.map((point, index) => (
             <Marker
               key={index}
               coordinate={{ latitude: point.latitude, longitude: point.longitude }}

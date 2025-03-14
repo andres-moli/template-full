@@ -114,6 +114,7 @@ const LoginScreen: React.FC = () => {
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
+          keyboardType='visible-password'
         />
         <TouchableOpacity onPress={togglePasswordVisibility}>
           <MaterialCommunityIcons
