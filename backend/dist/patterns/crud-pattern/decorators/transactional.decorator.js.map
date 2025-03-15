@@ -1,0 +1,1 @@
+{"version":3,"file":"transactional.decorator.js","sourceRoot":"","sources":["../../../../src/patterns/crud-pattern/decorators/transactional.decorator.ts"],"names":[],"mappings":";;;AAAA,2CAAiD;AACjD,qFAAiF;AAE1E,MAAM,aAAa,GAAG,GAAG,EAAE,CAAC,IAAA,wBAAe,EAAC,gDAAsB,CAAC,CAAC;AAA9D,QAAA,aAAa,iBAAiD"}

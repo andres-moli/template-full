@@ -1,0 +1,30 @@
+import { Type } from '@nestjs/common';
+import { DeepPartial } from 'typeorm';
+import { IContext } from '../interfaces/context.interface';
+import { Constructable } from '../types/constructable.type';
+import { ICrudService } from '../interfaces/crud-service.interface';
+import { ICrudResolverClassStructure, ICrudResolverStructure } from '../interfaces/structures/crud-resolver-structure.inteface';
+import { IFindArgs } from '../interfaces/find-args.interface';
+import { IDataEntity } from '../interfaces/data-entity.interface';
+import { DefaultArgs } from '../classes/args/default.args';
+import { MetadataPagination } from '../classes/args/metadata-pagination.args';
+export declare function CrudResolverFrom<PrimaryKeyType, EntityType extends IDataEntity<PrimaryKeyType>, CreateInputType extends DeepPartial<EntityType>, UpdateInputType extends DeepPartial<EntityType>, ServiceType extends ICrudService<PrimaryKeyType, EntityType, CreateInputType, UpdateInputType, FindArgsType, ContextType>, FindArgsType extends IFindArgs = DefaultArgs, ContextType extends IContext = IContext>(structure: ICrudResolverStructure<PrimaryKeyType, EntityType, CreateInputType, UpdateInputType, ServiceType, FindArgsType, ContextType>): Type<{
+    readonly service: ServiceType;
+    create(createInput: CreateInputType, context: ContextType): Promise<EntityType>;
+    update(updateInput: UpdateInputType, context: ContextType): Promise<EntityType>;
+    remove(id: PrimaryKeyType, context: ContextType): Promise<EntityType>;
+    findOne(id: PrimaryKeyType, context: ContextType): Promise<EntityType>;
+    findAll(context: ContextType, args: any): Promise<EntityType[]>;
+    findOneArg(context: ContextType, args: any): Promise<EntityType>;
+    Count(context: ContextType, args: any): Promise<MetadataPagination>;
+}>;
+export declare function CrudResolver<PrimaryKeyType, EntityType extends IDataEntity<PrimaryKeyType>, CreateInputType extends DeepPartial<EntityType>, UpdateInputType extends DeepPartial<EntityType>, ServiceType extends ICrudService<PrimaryKeyType, EntityType, CreateInputType, UpdateInputType, FindArgsType, ContextType>, FindArgsType extends IFindArgs = DefaultArgs, ContextType extends IContext = IContext>(entityType: Constructable<EntityType>, createInputType: Constructable<CreateInputType>, updateInputType: Constructable<UpdateInputType>, serviceType: Constructable<ServiceType>, resolverStructure: ICrudResolverClassStructure<PrimaryKeyType>, findArgsType: Constructable<FindArgsType>, contextType?: Constructable<ContextType>): Type<{
+    readonly service: ServiceType;
+    create(createInput: CreateInputType, context: ContextType): Promise<EntityType>;
+    update(updateInput: UpdateInputType, context: ContextType): Promise<EntityType>;
+    remove(id: PrimaryKeyType, context: ContextType): Promise<EntityType>;
+    findOne(id: PrimaryKeyType, context: ContextType): Promise<EntityType>;
+    findAll(context: ContextType, args: any): Promise<EntityType[]>;
+    findOneArg(context: ContextType, args: any): Promise<EntityType>;
+    Count(context: ContextType, args: any): Promise<MetadataPagination>;
+}>;

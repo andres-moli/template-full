@@ -1,0 +1,11 @@
+import { Type } from "@nestjs/common";
+import { DeepPartial } from "typeorm";
+import { IContext } from "../interfaces/context.interface";
+import { IDataEntity } from "../interfaces/data-entity.interface";
+import { ICrudService } from "../interfaces/crud-service.interface";
+import { Constructable } from "../types/constructable.type";
+import { ICrudServiceStructure } from "../interfaces/structures/crud-service-structure.interface";
+import { IFindArgs } from "../interfaces/find-args.interface";
+import { DefaultArgs } from "../classes/args/default.args";
+export declare function CrudServiceFrom<PrimaryKeyType, EntityType extends IDataEntity<PrimaryKeyType>, CreateInputType extends DeepPartial<EntityType>, UpdateInputType extends DeepPartial<EntityType>, FindArgsType extends IFindArgs = DefaultArgs, ContextType extends IContext = IContext>(structure: ICrudServiceStructure<PrimaryKeyType, EntityType, CreateInputType, UpdateInputType, FindArgsType, ContextType>): Type<ICrudService<PrimaryKeyType, EntityType, CreateInputType, UpdateInputType, FindArgsType, ContextType>>;
+export declare function CrudService<PrimaryKeyType, EntityType extends IDataEntity<PrimaryKeyType>, CreateInputType extends DeepPartial<EntityType>, UpdateInputType extends DeepPartial<EntityType>, FindArgsType extends IFindArgs = DefaultArgs, ContextType extends IContext = IContext>(entityType: Constructable<EntityType>, createInputType: Constructable<CreateInputType>, updateInputType: Constructable<UpdateInputType>, findArgsType?: Constructable<FindArgsType>, contextType?: Constructable<ContextType>): Type<ICrudService<PrimaryKeyType, EntityType, CreateInputType, UpdateInputType, FindArgsType, ContextType>>;

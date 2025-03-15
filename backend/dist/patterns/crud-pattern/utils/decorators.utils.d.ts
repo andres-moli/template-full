@@ -1,0 +1,2 @@
+export declare function applyMethodDecorators(decorators: (() => MethodDecorator)[]): <TFunction extends Function, Y>(target: object | TFunction, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<Y>) => void;
+export declare function applyClassDecorators(decorators: (() => ClassDecorator)[]): <TFunction extends Function, Y>(target: object | TFunction, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<Y>) => void;

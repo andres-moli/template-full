@@ -12,6 +12,7 @@
     "start:dev": "SET TZ='America/Bogota'&&nest start --watch",
     "start:debug": "SET TZ=America/Bogota&&nest start --debug --watch",
     "start:prod": "set NODE_OPTIONS=--openssl-legacy-provider && node dist/main",
+    "start:pre": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "SET TZ=America/Bogota&&jest",
     "test:watch": "SET TZ=America/Bogota&&jest --watch",

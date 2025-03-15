@@ -1,0 +1,40 @@
+import { UsersService } from '../services/users.service';
+import { User } from '../entities/user.entity';
+import { CodeConfirmationInput } from '../dto/inputs/code-confirmation.input';
+import { RecoverPasswordInput } from '../dto/inputs/recover-password.input';
+import { UpdatePasswordInput } from '../dto/inputs/update-password.input';
+import { AddAndRemoveRoleInput } from '../dto/inputs/add-and-remove-role.input';
+import { UpdateUserInformationInput } from '../dto/inputs/update-user-information.input';
+import { UpdateUserPasswordInput } from '../dto/inputs/update-user-password.input';
+import { DoubleVerificationInput } from '../dto/inputs/double-verification.input';
+import { CodeRecoverPasswordInput } from '../dto/inputs/code-recover-password.input';
+import { IContext } from '../../../patterns/crud-pattern/interfaces/context.interface';
+import { RoleFx } from '../../roles/entities/role-fx.entity';
+import { Role } from '../../roles/entities/role.entity';
+declare const UsersResolver_base: import("@nestjs/common").Type<{
+    readonly service: UsersService;
+    create(createInput: import("../dto/inputs/create-user.input").CreateUserInput, context: IContext): Promise<User>;
+    update(updateInput: import("../dto/inputs/update-user.input").UpdateUserInput, context: IContext): Promise<User>;
+    remove(id: unknown, context: IContext): Promise<User>;
+    findOne(id: unknown, context: IContext): Promise<User>;
+    findAll(context: IContext, args: any): Promise<User[]>;
+    findOneArg(context: IContext, args: any): Promise<User>;
+    Count(context: IContext, args: any): Promise<import("../../../patterns/crud-pattern/classes/args/metadata-pagination.args").MetadataPagination>;
+}>;
+export declare class UsersResolver extends UsersResolver_base {
+    resetSuperAdmin(context: IContext): Promise<User>;
+    codeConfirmation(context: IContext, codeConfirmationInput: CodeConfirmationInput): Promise<User>;
+    recoverPassword(context: IContext, recoverPasswordInput: RecoverPasswordInput): Promise<string>;
+    updatePassword(context: IContext, updatePasswordInput: UpdatePasswordInput): Promise<User>;
+    addUserRole(context: IContext, addAndRemoveRoleInput: AddAndRemoveRoleInput): Promise<User>;
+    removeUserRole(context: IContext, addAndRemoveRoleInput: AddAndRemoveRoleInput): Promise<User>;
+    updateUserInformation(context: IContext, updateUserInformationInput: UpdateUserInformationInput): Promise<User>;
+    updateUserPassword(context: IContext, updateUserPasswordInput: UpdateUserPasswordInput): Promise<User>;
+    enableAndDisableDoubleVerification(context: IContext, doubleVerificationInput: DoubleVerificationInput): Promise<string>;
+    codeRecoverPassword(context: IContext, codeRecoverPasswordInput: CodeRecoverPasswordInput): Promise<string>;
+    userRoles(user: User, context: IContext): Promise<Role[]>;
+    userRolesFx(user: User, context: IContext): Promise<RoleFx[]>;
+    fullName(user: User, context: IContext): Promise<string>;
+    isActivityNow(user: User, context: IContext): Promise<boolean>;
+}
+export {};

@@ -1,0 +1,35 @@
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/services/users.service';
+import { User } from '../users/entities/user.entity';
+import { SignInInput as SigninInput, SignupEmailInput, SignUpInput as SignupInput } from './dto';
+import { AuthResponse } from './types/auth-response.type';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ValidateTokenInput } from './dto/validate-token.input';
+import { ApprovalTokenInput } from './dto/approval-token.input';
+import { SendDoubleVerificationInput } from './dto/send-double-verification.input';
+import { SigninAdminInput } from './dto/singin-admin.input';
+import { IContext } from '../../patterns/crud-pattern/interfaces/context.interface';
+import { MailService } from 'src/general/email/service/email.service';
+export declare class AuthService {
+    private readonly userService;
+    private readonly jwtService;
+    private readonly eventEmitter;
+    private readonly mailService;
+    constructor(userService: UsersService, jwtService: JwtService, eventEmitter: EventEmitter2, mailService: MailService);
+    sendEmailRecovryPassword(email: string): Promise<string>;
+    restPassword(user: User, password: string): Promise<User>;
+    private getJwtTokenWithOutAuth;
+    private getJwtTokenWithAuth;
+    private checkToken;
+    private sendVerificationCode;
+    signUpWithDocument(context: IContext, signupInput: SignupInput): Promise<AuthResponse>;
+    signUpWithEmail(context: IContext, signupInput: SignupEmailInput): Promise<AuthResponse>;
+    signin(context: IContext, signinInput: SigninInput): Promise<AuthResponse>;
+    signInUserAdmin(user: User, signInAdminInput: SigninAdminInput): Promise<AuthResponse>;
+    validateUser(context: IContext, id: string): Promise<User>;
+    validateFunctionality(context: IContext, key: string, userId: string): Promise<boolean>;
+    validateUserToken(validateTokenInput: ValidateTokenInput): Promise<User>;
+    approvalJwt(approvalTokenInput: ApprovalTokenInput): Promise<AuthResponse>;
+    revalidateToken(user: User): AuthResponse;
+    sendCodeDoubleVerification(sendDoubleVerificationInput: SendDoubleVerificationInput): Promise<string>;
+}
