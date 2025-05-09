@@ -61,6 +61,7 @@ const rxjs_1 = require("rxjs");
 const visit_coment_service_1 = require("../../visit-coment/services/visit-coment.service");
 const visit_coment_emun_1 = require("../../visit-coment/emun/visit-coment.emun");
 const visit_coment_entity_1 = require("../../visit-coment/entities/visit-coment.entity");
+const tool_visit_service_1 = require("../../tools/tool-visit/service/tool-visit-service");
 exports.serviceStructure = (0, crud_service_structure_interface_1.CrudServiceStructure)({
     entityType: visit_entity_1.Visit,
     createInputType: create_visit_input_1.CreateVisitInput,
@@ -68,7 +69,7 @@ exports.serviceStructure = (0, crud_service_structure_interface_1.CrudServiceStr
     findArgsType: find_visit_args_1.FindVisitArgs,
 });
 let VisitService = class VisitService extends (0, crud_service_mixin_1.CrudServiceFrom)(exports.serviceStructure) {
-    constructor(clientService, usersService, parameterService, visitTypeService, mailService, httpService, visitComentService) {
+    constructor(clientService, usersService, parameterService, visitTypeService, mailService, httpService, visitComentService, visitToolVisittService) {
         super();
         this.clientService = clientService;
         this.usersService = usersService;
@@ -77,6 +78,7 @@ let VisitService = class VisitService extends (0, crud_service_mixin_1.CrudServi
         this.mailService = mailService;
         this.httpService = httpService;
         this.visitComentService = visitComentService;
+        this.visitToolVisittService = visitToolVisittService;
     }
     async beforeCreate(context, repository, entity, createInput) {
         if (await this.findActivityNowUser(context, createInput.userId)) {
@@ -85,6 +87,7 @@ let VisitService = class VisitService extends (0, crud_service_mixin_1.CrudServi
         entity.status = visit_emun_1.StatusVisitEnum.initiated;
         entity.user = await this.usersService.findOne(context, createInput.userId, true);
         entity.dateVisit = createInput.dateVisit;
+        entity.type = await this.visitTypeService.findOne(context, createInput.typeId);
     }
     async beforeUpdate(context, repository, entity, updateInput) {
         if (updateInput.status === entity.status) {
@@ -132,6 +135,16 @@ let VisitService = class VisitService extends (0, crud_service_mixin_1.CrudServi
         return 0;
     }
     async afterCreate(context, repository, entity, createInput) {
+        if (Array.isArray(createInput.tools)) {
+            for (const tool of createInput.tools) {
+                this.visitToolVisittService.create(context, {
+                    toolUnitId: tool.toolUnitId,
+                    visitId: entity.id,
+                    photoUrls: tool.photoUrls,
+                    usageDate: new Date(),
+                });
+            }
+        }
         const comment = await this.visitComentService.create(context, {
             type: visit_coment_emun_1.VisitComentTypeEnum.INICIO,
             visitId: entity.id,
@@ -142,7 +155,8 @@ let VisitService = class VisitService extends (0, crud_service_mixin_1.CrudServi
             longitude: entity.longitude,
             dateFull: entity.dateVisit,
             time: entity.dateVisit,
-            mocked: entity.mocked
+            mocked: entity.mocked,
+            fileId: createInput.fileId || undefined
         });
         if (entity.mocked) {
             this.sendMailMockedFail(context, comment);
@@ -163,7 +177,8 @@ let VisitService = class VisitService extends (0, crud_service_mixin_1.CrudServi
             longitude: updateInput.longitude,
             dateFull: (0, moment_1.default)((0, moment_1.default)(updateInput.dateVisit).format('YYYY-MM-DD HH:mm')).local().toDate(),
             time: updateInput.dateVisit,
-            mocked: updateInput.mocked
+            mocked: updateInput.mocked,
+            fileId: updateInput.fileId || undefined
         });
         if (updateInput.mocked) {
             this.sendMailMockedFail(context, comment);
@@ -401,12 +416,14 @@ exports.VisitService = VisitService;
 exports.VisitService = VisitService = __decorate([
     (0, common_1.Injectable)(),
     __param(6, (0, common_1.Inject)((0, common_1.forwardRef)(() => visit_coment_service_1.VisitComentService))),
+    __param(7, (0, common_1.Inject)((0, common_1.forwardRef)(() => tool_visit_service_1.VisitToolVisittService))),
     __metadata("design:paramtypes", [client_service_1.ClientService,
         users_service_1.UsersService,
         parameter_service_1.ParameterService,
         visit_type_service_1.VisitTypeService,
         email_service_1.MailService,
         axios_1.HttpService,
-        visit_coment_service_1.VisitComentService])
+        visit_coment_service_1.VisitComentService,
+        tool_visit_service_1.VisitToolVisittService])
 ], VisitService);
 //# sourceMappingURL=visit.service.js.map

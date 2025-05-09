@@ -6,7 +6,7 @@ import { useColor } from '../../Constants/Color';
 const {color} = useColor()
 const MapOneScreen = ({ navigation, route }) => {
   const { latitude, longitude } = route.params;
-  const [url, setUrl] = useState(`https://4tpbvf4h-5173.use.devtunnels.ms/locationFree/${latitude}/${longitude}`);
+  const [url, setUrl] = useState(`https://89qpvk6w-5173.use.devtunnels.ms/locationFree/${latitude}/${longitude}`);
   const [loading, setLoading] = useState(true); // Estado para manejar la carga
 
   // Función para manejar la carga del WebView

@@ -6,7 +6,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 const ImageField = ({value  }: { value: string}) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
-  console.log(value)
   return (
     <Card style={styles.card}>
       <View style={styles.cardHeader}>
@@ -40,7 +39,6 @@ const ImageField = ({value  }: { value: string}) => {
   );
 };
 
-export default ImageField;
 
 const styles = StyleSheet.create({
   card: {
@@ -89,3 +87,5 @@ const styles = StyleSheet.create({
     right: 20,
   },
 });
+
+export default ImageField;

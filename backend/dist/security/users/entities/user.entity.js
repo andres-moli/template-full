@@ -20,6 +20,7 @@ const departament_entity_1 = require("../../../general/department/entities/depar
 const country_entity_1 = require("../../../general/country/entities/country.entity");
 const crud_entity_1 = require("../../../patterns/crud-pattern/entities/crud-entity");
 const role_entity_1 = require("../../roles/entities/role.entity");
+const documento_usuario_entity_1 = require("../../../main/seller/doc/document/entities/documento-usuario.entity");
 let User = class User extends crud_entity_1.CrudEntity {
 };
 exports.User = User;
@@ -152,6 +153,11 @@ __decorate([
     (0, graphql_1.Field)(() => country_entity_1.Country, { nullable: true }),
     __metadata("design:type", country_entity_1.Country)
 ], User.prototype, "country", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => documento_usuario_entity_1.DocumentoUsuario, doc => doc.usuario, { lazy: true }),
+    (0, graphql_1.Field)(() => [documento_usuario_entity_1.DocumentoUsuario], { nullable: true }),
+    __metadata("design:type", Promise)
+], User.prototype, "documentos", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)({ name: 'sec_user' }),
     (0, graphql_1.ObjectType)()

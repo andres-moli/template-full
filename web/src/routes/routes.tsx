@@ -10,6 +10,11 @@ import RoutersPage from '../pages/routers';
 import TimeRealPage from '../pages/timeReal';
 import MapOnePage from '../pages/Map';
 import MapMultiplePage from '../pages/Map/mapMulti';
+import ToolsPage from '../pages/tools/tools';
+import ToolsItemPage from '../pages/tools/tools-item';
+import DocumentPage from '../pages/document/document';
+import DocumentUserPage from '../pages/document/document-user';
+import VisitTypePage from '../pages/visit-tpe';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -38,6 +43,12 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
+          path="/visit-type"
+          element={
+            <ProtectedRoute element={<VisitTypePage />} />
+          }
+        />
+        <Route
           path="/report"
           element={
             <ProtectedRoute element={<ReportPage />} />
@@ -55,6 +66,31 @@ const AppRoutes: React.FC = () => {
             <ProtectedRoute element={<TimeRealPage />} />
           }
         />
+        <Route
+          path="/tools"
+          element={
+            <ProtectedRoute element={<ToolsPage />} />
+          }
+        />
+        <Route
+          path="/tools-item"
+          element={
+            <ProtectedRoute element={<ToolsItemPage />} />
+          }
+        />
+        <Route
+          path="/document"
+          element={
+            <ProtectedRoute element={<DocumentPage />} />
+          }
+        />
+        <Route
+          path="/document-user"
+          element={
+            <ProtectedRoute element={<DocumentUserPage />} />
+          }
+        />
+        
         <Route
           path="/locationFree/:lat/:lon"
           element={

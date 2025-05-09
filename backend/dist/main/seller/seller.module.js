@@ -12,12 +12,14 @@ const visit_module_1 = require("./visit/visit.module");
 const visit_coment_module_1 = require("./visit-coment/visit-coment.module");
 const visit_type_module_1 = require("./visit-type/visit-type.module");
 const fletes_module_1 = require("./fletes/fletes.module");
+const tools_module_1 = require("./tools/tools.module");
+const doc_module_1 = require("./doc/doc.module");
 let SellerModule = class SellerModule {
 };
 exports.SellerModule = SellerModule;
 exports.SellerModule = SellerModule = __decorate([
     (0, common_1.Module)({
-        imports: [visit_module_1.VisitModule, visit_coment_module_1.VisitComentModule, visit_type_module_1.VisitTypeModule, fletes_module_1.FletesModule]
+        imports: [visit_module_1.VisitModule, visit_coment_module_1.VisitComentModule, visit_type_module_1.VisitTypeModule, fletes_module_1.FletesModule, tools_module_1.ToolsModule, doc_module_1.DocumentosModule]
     })
 ], SellerModule);
 //# sourceMappingURL=seller.module.js.map

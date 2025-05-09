@@ -20,6 +20,7 @@ const emial_module_1 = require("../../../general/email/emial.module");
 const visit_controller_1 = require("./controller/visit.controller");
 const axios_1 = require("@nestjs/axios");
 const visit_coment_module_1 = require("../visit-coment/visit-coment.module");
+const VisitToolUnitModule_module_1 = require("../tools/tool-visit/VisitToolUnitModule.module");
 let VisitModule = class VisitModule {
 };
 exports.VisitModule = VisitModule;
@@ -34,7 +35,8 @@ exports.VisitModule = VisitModule = __decorate([
             visit_type_module_1.VisitTypeModule,
             emial_module_1.MailModule,
             axios_1.HttpModule,
-            visit_coment_module_1.VisitComentModule
+            visit_coment_module_1.VisitComentModule,
+            (0, common_1.forwardRef)(() => VisitToolUnitModule_module_1.VisitToolUnitModule)
         ],
         controllers: [visit_controller_1.VisitController],
         exports: [visit_service_1.VisitService]

@@ -141,6 +141,14 @@ export type CreateDocumentTypeInput = {
   document: Scalars['String']['input'];
 };
 
+export type CreateDocumentoUsuarioInput = {
+  estado?: EstadoDocumento;
+  fileId: Scalars['String']['input'];
+  observaciones?: InputMaybe<Scalars['String']['input']>;
+  tipoDocumentoId: Scalars['String']['input'];
+  usuarioId: Scalars['String']['input'];
+};
+
 export type CreateDummyInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   firstField: Scalars['String']['input'];
@@ -250,6 +258,29 @@ export type CreateRoleInput = {
   name: Scalars['String']['input'];
 };
 
+export type CreateTipoDocumentoInput = {
+  activo?: Scalars['Boolean']['input'];
+  descripcion?: InputMaybe<Scalars['String']['input']>;
+  nombre: Scalars['String']['input'];
+  obligatorio?: Scalars['Boolean']['input'];
+};
+
+export type CreateToolInput = {
+  name: Scalars['String']['input'];
+  reference: Scalars['String']['input'];
+};
+
+export type CreateToolUnitInput = {
+  name: Scalars['String']['input'];
+  status?: ToolUnitStatusEnum;
+  toolId: Scalars['ID']['input'];
+};
+
+export type CreateToolUnitPhotoInput = {
+  fileId: Scalars['String']['input'];
+  visitToolUnitId: Scalars['ID']['input'];
+};
+
 export type CreateUserInput = {
   address: Scalars['String']['input'];
   cityId?: InputMaybe<Scalars['ID']['input']>;
@@ -292,12 +323,27 @@ export type CreateVisitComentInput = {
 export type CreateVisitInput = {
   dateVisit: Scalars['DateTime']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  fileId?: InputMaybe<Scalars['String']['input']>;
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
   mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status: StatusVisitEnum;
+  tools?: InputMaybe<Array<CreateVisitToolUnitInput>>;
+  typeId: Scalars['String']['input'];
   userId: Scalars['String']['input'];
+};
+
+export type CreateVisitToolUnitAllInput = {
+  input: Array<CreateVisitToolUnitInput>;
+};
+
+export type CreateVisitToolUnitInput = {
+  /** URLs de las fotos */
+  photoUrls?: InputMaybe<Array<Scalars['String']['input']>>;
+  toolUnitId: Scalars['ID']['input'];
+  usageDate?: InputMaybe<Scalars['DateTime']['input']>;
+  visitId: Scalars['ID']['input'];
 };
 
 export type CreateVisitTypeInput = {
@@ -336,6 +382,19 @@ export type DocumentType = {
   document: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type DocumentoUsuario = {
+  __typename?: 'DocumentoUsuario';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  estado: EstadoDocumento;
+  file: FileInfo;
+  id: Scalars['ID']['output'];
+  observaciones?: Maybe<Scalars['String']['output']>;
+  tipoDocumento: TipoDocumento;
+  updatedAt: Scalars['DateTime']['output'];
+  usuario: User;
 };
 
 export type DoubleVerificationInput = {
@@ -410,6 +469,12 @@ export type EmailRecipient = {
   type: RecipientType;
 };
 
+export enum EstadoDocumento {
+  Aceptado = 'ACEPTADO',
+  Pendiente = 'PENDIENTE',
+  Rechazado = 'RECHAZADO'
+}
+
 export type FacturaPorClienteDto = {
   tem_cedula?: InputMaybe<Scalars['String']['input']>;
   tem_fecha_desde?: InputMaybe<Scalars['String']['input']>;
@@ -468,6 +533,17 @@ export type FindClientWhere = {
   user?: InputMaybe<StringFilter>;
 };
 
+export type FindDocOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindDocWhere = {
+  _and?: InputMaybe<Array<FindDocWhere>>;
+  _or?: InputMaybe<Array<FindDocWhere>>;
+  tipoDocumento?: InputMaybe<StringFilter>;
+  usuario?: InputMaybe<StringFilter>;
+};
+
 export type FindDummyFamilyWhere = {
   _and?: InputMaybe<Array<FindDummyFamilyWhere>>;
   _or?: InputMaybe<Array<FindDummyFamilyWhere>>;
@@ -518,6 +594,29 @@ export type FindFletesWhere = {
   status?: InputMaybe<StringFilter>;
 };
 
+export type FindToolOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindToolUnitOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindToolUnitWhere = {
+  _and?: InputMaybe<Array<FindToolUnitWhere>>;
+  _or?: InputMaybe<Array<FindToolUnitWhere>>;
+  serialNumber?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
+};
+
+export type FindToolWhere = {
+  _and?: InputMaybe<Array<FindToolWhere>>;
+  _or?: InputMaybe<Array<FindToolWhere>>;
+  description?: InputMaybe<StringFilter>;
+  name?: InputMaybe<StringFilter>;
+  type?: InputMaybe<StringFilter>;
+};
+
 export type FindUsersOrderBy = {
   createdAt?: InputMaybe<OrderTypes>;
   email?: InputMaybe<OrderTypes>;
@@ -551,6 +650,28 @@ export type FindVisitComentWhere = {
 export type FindVisitOrderBy = {
   createdAt?: InputMaybe<OrderTypes>;
   dateVisit?: InputMaybe<OrderTypes>;
+};
+
+export type FindVisitToolUnitOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindVisitToolUnitPhotoOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindVisitToolUnitPhotoWhere = {
+  _and?: InputMaybe<Array<FindVisitToolUnitPhotoWhere>>;
+  _or?: InputMaybe<Array<FindVisitToolUnitPhotoWhere>>;
+  url?: InputMaybe<StringFilter>;
+  visitToolUnit?: InputMaybe<StringFilter>;
+};
+
+export type FindVisitToolUnitWhere = {
+  _and?: InputMaybe<Array<FindVisitToolUnitWhere>>;
+  _or?: InputMaybe<Array<FindVisitToolUnitWhere>>;
+  comment?: InputMaybe<StringFilter>;
+  createdAt?: InputMaybe<DateFilter>;
 };
 
 export type FindVisitTypeOrderBy = {
@@ -697,6 +818,7 @@ export type Mutation = {
   createClientContact: ClientContact;
   createDefaultRoles: Array<Role>;
   createDocumentType: DocumentType;
+  createDocumentoUsuario: DocumentoUsuario;
   createDummiesX: Array<Dummy>;
   createDummy: Dummy;
   createFletes: Fletes;
@@ -711,6 +833,12 @@ export type Mutation = {
   createProfile: Profile;
   createRole: Role;
   createRoleFx: Array<RoleFx>;
+  createTipoDocumento: TipoDocumento;
+  createTool: Tool;
+  createToolItem: ToolUnit;
+  createToolPhoto: ToolUnitPhoto;
+  createToolVisit: VisitToolUnit;
+  createToolVisitAll: Scalars['String']['output'];
   createUser: User;
   createVisit: Visit;
   createVisitComent: VisitComent;
@@ -723,7 +851,9 @@ export type Mutation = {
   removeClient: Client;
   removeClientContact: ClientContact;
   removeDocumentType: DocumentType;
+  removeDocumentoUsuario: DocumentoUsuario;
   removeDummy: Dummy;
+  removeFile: Scalars['String']['output'];
   removeFletes: Fletes;
   removeGroup: Group;
   removeMultiKeyRegister: MultikeyRegister;
@@ -735,6 +865,11 @@ export type Mutation = {
   removeProfile: Profile;
   removeRole: Role;
   removeRoleFx: Array<Scalars['String']['output']>;
+  removeTipoDocumento: TipoDocumento;
+  removeTool: Tool;
+  removeToolItem: ToolUnit;
+  removeToolPhoto: ToolUnitPhoto;
+  removeToolVisit: VisitToolUnit;
   removeUser: User;
   removeUserRole: User;
   removeVisit: Visit;
@@ -754,6 +889,7 @@ export type Mutation = {
   updateClient: Client;
   updateClientContact: ClientContact;
   updateDocumentType: DocumentType;
+  updateDocumentoUsuario: DocumentoUsuario;
   updateDummy: Dummy;
   updateFletes: Fletes;
   updateGroup: Group;
@@ -766,6 +902,11 @@ export type Mutation = {
   updatePositionInput: Position;
   updateProfile: Profile;
   updateRole: Role;
+  updateTipoDocumento: TipoDocumento;
+  updateTool: Tool;
+  updateToolItem: ToolUnit;
+  updateToolPhoto: ToolUnitPhoto;
+  updateToolVisit: VisitToolUnit;
   updateUser: User;
   updateUserInformation: User;
   updateUserPassword: User;
@@ -802,6 +943,11 @@ export type MutationCreateClientContactArgs = {
 
 export type MutationCreateDocumentTypeArgs = {
   createInput: CreateDocumentTypeInput;
+};
+
+
+export type MutationCreateDocumentoUsuarioArgs = {
+  createInput: CreateDocumentoUsuarioInput;
 };
 
 
@@ -870,6 +1016,36 @@ export type MutationCreateRoleFxArgs = {
 };
 
 
+export type MutationCreateTipoDocumentoArgs = {
+  createInput: CreateTipoDocumentoInput;
+};
+
+
+export type MutationCreateToolArgs = {
+  createInput: CreateToolInput;
+};
+
+
+export type MutationCreateToolItemArgs = {
+  createInput: CreateToolUnitInput;
+};
+
+
+export type MutationCreateToolPhotoArgs = {
+  createInput: CreateToolUnitPhotoInput;
+};
+
+
+export type MutationCreateToolVisitArgs = {
+  createInput: CreateVisitToolUnitInput;
+};
+
+
+export type MutationCreateToolVisitAllArgs = {
+  createVisitToolUnitAllInput: CreateVisitToolUnitAllInput;
+};
+
+
 export type MutationCreateUserArgs = {
   createInput: CreateUserInput;
 };
@@ -925,7 +1101,17 @@ export type MutationRemoveDocumentTypeArgs = {
 };
 
 
+export type MutationRemoveDocumentoUsuarioArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationRemoveDummyArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveFileArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -982,6 +1168,31 @@ export type MutationRemoveRoleArgs = {
 
 export type MutationRemoveRoleFxArgs = {
   removeRoleFxInput: CreateAndRemoveRoleFxInput;
+};
+
+
+export type MutationRemoveTipoDocumentoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveToolArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveToolItemArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveToolPhotoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveToolVisitArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1076,6 +1287,11 @@ export type MutationUpdateDocumentTypeArgs = {
 };
 
 
+export type MutationUpdateDocumentoUsuarioArgs = {
+  updateInput: UpdateDocumentoUsuarioInput;
+};
+
+
 export type MutationUpdateDummyArgs = {
   updateInput: UpdateDummyInput;
 };
@@ -1133,6 +1349,31 @@ export type MutationUpdateProfileArgs = {
 
 export type MutationUpdateRoleArgs = {
   updateInput: UpdateRoleInput;
+};
+
+
+export type MutationUpdateTipoDocumentoArgs = {
+  updateInput: UpdateTipoDocumentoInput;
+};
+
+
+export type MutationUpdateToolArgs = {
+  updateInput: UpdateToolInput;
+};
+
+
+export type MutationUpdateToolItemArgs = {
+  updateInput: UpdateToolUnitInput;
+};
+
+
+export type MutationUpdateToolPhotoArgs = {
+  updateInput: UpdateToolUnitPhotoInput;
+};
+
+
+export type MutationUpdateToolVisitArgs = {
+  updateInput: UpdateVisitToolUnitInput;
 };
 
 
@@ -1320,6 +1561,18 @@ export type Query = {
   NotificationGroup: NotificationGroup;
   NotificationGroups: Array<NotificationGroup>;
   NotificationGroupsCount: MetadataPagination;
+  Tool: Tool;
+  ToolItem: ToolUnit;
+  ToolPhoto: ToolUnitPhoto;
+  ToolVisit: VisitToolUnit;
+  Tools: Array<Tool>;
+  ToolsCount: MetadataPagination;
+  ToolsItems: Array<ToolUnit>;
+  ToolsItemsCount: MetadataPagination;
+  ToolsPhotos: Array<ToolUnitPhoto>;
+  ToolsPhotosCount: MetadataPagination;
+  ToolsVisits: Array<VisitToolUnit>;
+  ToolsVisitsCount: MetadataPagination;
   approvalJwt: AuthResponse;
   cities: Array<City>;
   city: City;
@@ -1338,6 +1591,9 @@ export type Query = {
   documentType: DocumentType;
   documentTypes: Array<DocumentType>;
   documentTypesCount: MetadataPagination;
+  documentoUsuario: DocumentoUsuario;
+  documentosUsuario: Array<DocumentoUsuario>;
+  documentosUsuarioCount: MetadataPagination;
   dummies: Array<Dummy>;
   dummiesCount: MetadataPagination;
   dummy: Dummy;
@@ -1383,6 +1639,9 @@ export type Query = {
   rolesFx: Array<RoleFx>;
   rolesFxCount: MetadataPagination;
   sendEmailRecovryPassword: Scalars['String']['output'];
+  tipoDocumento: TipoDocumento;
+  tiposDocumento: Array<TipoDocumento>;
+  tiposDocumentoCount: MetadataPagination;
   user: User;
   users: Array<User>;
   usersCount: MetadataPagination;
@@ -1438,6 +1697,82 @@ export type QueryNotificationGroupsArgs = {
 
 export type QueryNotificationGroupsCountArgs = {
   pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryToolArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryToolItemArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryToolPhotoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryToolVisitArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryToolsArgs = {
+  orderBy?: InputMaybe<Array<FindToolOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolWhere>;
+};
+
+
+export type QueryToolsCountArgs = {
+  orderBy?: InputMaybe<Array<FindToolOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolWhere>;
+};
+
+
+export type QueryToolsItemsArgs = {
+  orderBy?: InputMaybe<Array<FindToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolUnitWhere>;
+};
+
+
+export type QueryToolsItemsCountArgs = {
+  orderBy?: InputMaybe<Array<FindToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolUnitWhere>;
+};
+
+
+export type QueryToolsPhotosArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitPhotoOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitPhotoWhere>;
+};
+
+
+export type QueryToolsPhotosCountArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitPhotoOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitPhotoWhere>;
+};
+
+
+export type QueryToolsVisitsArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitWhere>;
+};
+
+
+export type QueryToolsVisitsCountArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitWhere>;
 };
 
 
@@ -1540,6 +1875,25 @@ export type QueryDocumentTypesArgs = {
 
 export type QueryDocumentTypesCountArgs = {
   pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryDocumentoUsuarioArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryDocumentosUsuarioArgs = {
+  orderBy?: InputMaybe<Array<FindDocOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindDocWhere>;
+};
+
+
+export type QueryDocumentosUsuarioCountArgs = {
+  orderBy?: InputMaybe<Array<FindDocOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindDocWhere>;
 };
 
 
@@ -1751,6 +2105,21 @@ export type QueryRolesFxCountArgs = {
 
 export type QuerySendEmailRecovryPasswordArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type QueryTipoDocumentoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryTiposDocumentoArgs = {
+  pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryTiposDocumentoCountArgs = {
+  pagination?: InputMaybe<Pagination>;
 };
 
 
@@ -1989,6 +2358,65 @@ export type Subscription = {
   messageReceived: Message;
 };
 
+export type TipoDocumento = {
+  __typename?: 'TipoDocumento';
+  activo: Scalars['Boolean']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  descripcion?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  nombre: Scalars['String']['output'];
+  obligatorio: Scalars['Boolean']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type Tool = {
+  __typename?: 'Tool';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  reference: Scalars['String']['output'];
+  units?: Maybe<Array<ToolUnit>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ToolUnit = {
+  __typename?: 'ToolUnit';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  status: ToolUnitStatusEnum;
+  tool: Tool;
+  updatedAt: Scalars['DateTime']['output'];
+  visits?: Maybe<Array<VisitToolUnit>>;
+};
+
+export type ToolUnitPhoto = {
+  __typename?: 'ToolUnitPhoto';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  file: FileInfo;
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  visitToolUnit: VisitToolUnit;
+};
+
+/** Estado actual de la unidad de herramienta. */
+export enum ToolUnitStatusEnum {
+  /** Disponible */
+  Available = 'AVAILABLE',
+  /** Dañada */
+  Damaged = 'DAMAGED',
+  /** En uso */
+  InUse = 'IN_USE',
+  /** Perdida */
+  Lost = 'LOST',
+  /** En mantenimiento */
+  Maintenance = 'MAINTENANCE'
+}
+
 export enum TypeClientEnum {
   ClienteFinal = 'CLIENTE_FINAL',
   Distribuidor = 'DISTRIBUIDOR',
@@ -2050,6 +2478,15 @@ export type UpdateClientInput = {
 export type UpdateDocumentTypeInput = {
   document?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+};
+
+export type UpdateDocumentoUsuarioInput = {
+  estado?: InputMaybe<EstadoDocumento>;
+  fileId?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  observaciones?: InputMaybe<Scalars['String']['input']>;
+  tipoDocumentoId?: InputMaybe<Scalars['String']['input']>;
+  usuarioId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDummyInput = {
@@ -2173,12 +2610,40 @@ export type UpdateRoleInput = {
 export type UpdateStatusInput = {
   dateVisit: Scalars['DateTime']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  fileId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
   mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status: StatusVisitEnum;
+};
+
+export type UpdateTipoDocumentoInput = {
+  activo?: InputMaybe<Scalars['Boolean']['input']>;
+  descripcion?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  nombre?: InputMaybe<Scalars['String']['input']>;
+  obligatorio?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateToolInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  reference?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateToolUnitInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<ToolUnitStatusEnum>;
+  toolId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UpdateToolUnitPhotoInput = {
+  fileId?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  visitToolUnitId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UpdateUserInformationInput = {
@@ -2240,13 +2705,25 @@ export type UpdateVisitComentInput = {
 export type UpdateVisitInput = {
   dateVisit?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  fileId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   latitude?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   longitude?: InputMaybe<Scalars['String']['input']>;
   mocked?: InputMaybe<Scalars['Boolean']['input']>;
   status?: InputMaybe<StatusVisitEnum>;
+  tools?: InputMaybe<Array<CreateVisitToolUnitInput>>;
+  typeId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateVisitToolUnitInput = {
+  id: Scalars['ID']['input'];
+  /** URLs de las fotos */
+  photoUrls?: InputMaybe<Array<Scalars['String']['input']>>;
+  toolUnitId?: InputMaybe<Scalars['ID']['input']>;
+  usageDate?: InputMaybe<Scalars['DateTime']['input']>;
+  visitId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UpdateVisitTypeInput = {
@@ -2266,6 +2743,7 @@ export type User = {
   dateIssue?: Maybe<Scalars['DateTime']['output']>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   department?: Maybe<Department>;
+  documentos?: Maybe<Array<DocumentoUsuario>>;
   email: Scalars['String']['output'];
   emailVerification: Scalars['Boolean']['output'];
   fullName: Scalars['String']['output'];
@@ -2349,6 +2827,8 @@ export type Visit = {
   longitude?: Maybe<Scalars['String']['output']>;
   mocked?: Maybe<Scalars['Boolean']['output']>;
   status: StatusVisitEnum;
+  toolUnitsUsed?: Maybe<Array<VisitToolUnit>>;
+  type?: Maybe<VisitType>;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
   visitItem: Array<VisitComent>;
@@ -2391,6 +2871,18 @@ export type VisitDashboardModel = {
   __typename?: 'VisitDashboardModel';
   earrings: Array<Visit>;
   realized: Array<Visit>;
+};
+
+export type VisitToolUnit = {
+  __typename?: 'VisitToolUnit';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  photos?: Maybe<Array<ToolUnitPhoto>>;
+  toolUnit: ToolUnit;
+  updatedAt: Scalars['DateTime']['output'];
+  usageDate: Scalars['DateTime']['output'];
+  visit: Visit;
 };
 
 export type VisitType = {
@@ -2443,6 +2935,119 @@ export type ValidateUserTokenQueryVariables = Exact<{
 
 export type ValidateUserTokenQuery = { __typename?: 'Query', validateUserToken: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name?: string | null, middleName?: string | null, lastName?: string | null, secondSurname?: string | null, email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, phoneNumber?: string | null, address?: string | null, confirmationCode?: string | null, position?: string | null, status: UserStatusTypes, phoneVerification: boolean, emailVerification: boolean, type: UserTypes, fullName: string } };
 
+export type CreateToolMutationVariables = Exact<{
+  createInput: CreateToolInput;
+}>;
+
+
+export type CreateToolMutation = { __typename?: 'Mutation', createTool: { __typename?: 'Tool', id: string } };
+
+export type CreateToolVisitMutationVariables = Exact<{
+  createInput: CreateVisitToolUnitInput;
+}>;
+
+
+export type CreateToolVisitMutation = { __typename?: 'Mutation', createToolVisit: { __typename?: 'VisitToolUnit', id: string } };
+
+export type CreateToolItemMutationVariables = Exact<{
+  createInput: CreateToolUnitInput;
+}>;
+
+
+export type CreateToolItemMutation = { __typename?: 'Mutation', createToolItem: { __typename?: 'ToolUnit', id: string } };
+
+export type CreateToolPhotoMutationVariables = Exact<{
+  createInput: CreateToolUnitPhotoInput;
+}>;
+
+
+export type CreateToolPhotoMutation = { __typename?: 'Mutation', createToolPhoto: { __typename?: 'ToolUnitPhoto', id: string } };
+
+export type UpdateToolMutationVariables = Exact<{
+  updateInput: UpdateToolInput;
+}>;
+
+
+export type UpdateToolMutation = { __typename?: 'Mutation', updateTool: { __typename?: 'Tool', id: string } };
+
+export type UpdateToolItemMutationVariables = Exact<{
+  updateInput: UpdateToolUnitInput;
+}>;
+
+
+export type UpdateToolItemMutation = { __typename?: 'Mutation', updateToolItem: { __typename?: 'ToolUnit', id: string } };
+
+export type UpdateToolPhotoMutationVariables = Exact<{
+  updateInput: UpdateToolUnitPhotoInput;
+}>;
+
+
+export type UpdateToolPhotoMutation = { __typename?: 'Mutation', updateToolPhoto: { __typename?: 'ToolUnitPhoto', id: string } };
+
+export type UpdateToolVisitMutationVariables = Exact<{
+  updateInput: UpdateVisitToolUnitInput;
+}>;
+
+
+export type UpdateToolVisitMutation = { __typename?: 'Mutation', updateToolVisit: { __typename?: 'VisitToolUnit', id: string } };
+
+export type ToolsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindToolOrderBy> | FindToolOrderBy>;
+  where?: InputMaybe<FindToolWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsQuery = { __typename?: 'Query', Tools: Array<{ __typename?: 'Tool', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, reference: string, units?: Array<{ __typename?: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, status: ToolUnitStatusEnum }> | null }>, ToolsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type ToolsItemsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindToolUnitOrderBy> | FindToolUnitOrderBy>;
+  where?: InputMaybe<FindToolUnitWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsItemsQuery = { __typename?: 'Query', ToolsItems: Array<{ __typename?: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, status: ToolUnitStatusEnum, tool: { __typename?: 'Tool', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, reference: string } }>, ToolsItemsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type ToolsPhotosQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindVisitToolUnitPhotoOrderBy> | FindVisitToolUnitPhotoOrderBy>;
+  where?: InputMaybe<FindVisitToolUnitPhotoWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsPhotosQuery = { __typename?: 'Query', ToolsPhotos: Array<{ __typename?: 'ToolUnitPhoto', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, file: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } }> };
+
+export type ToolsVisitsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindVisitToolUnitOrderBy> | FindVisitToolUnitOrderBy>;
+  where?: InputMaybe<FindVisitToolUnitWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsVisitsQuery = { __typename?: 'Query', ToolsVisits: Array<{ __typename?: 'VisitToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, usageDate: any, toolUnit: { __typename?: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, status: ToolUnitStatusEnum } }>, ToolsVisitsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type ToolsListQueryVariables = Exact<{
+  where?: InputMaybe<FindToolWhere>;
+}>;
+
+
+export type ToolsListQuery = { __typename?: 'Query', Tools: Array<{ __typename?: 'Tool', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, reference: string, units?: Array<{ __typename?: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, status: ToolUnitStatusEnum }> | null }> };
+
+export type CreateToolVisitAllMutationVariables = Exact<{
+  createVisitToolUnitAllInput: CreateVisitToolUnitAllInput;
+}>;
+
+
+export type CreateToolVisitAllMutation = { __typename?: 'Mutation', createToolVisitAll: string };
+
+export type RemoveFileMutationVariables = Exact<{
+  removeFileId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveFileMutation = { __typename?: 'Mutation', removeFile: string };
+
 export type CreateVisitMutationVariables = Exact<{
   createInput: CreateVisitInput;
 }>;
@@ -2463,14 +3068,14 @@ export type VisitsQueryVariables = Exact<{
 }>;
 
 
-export type VisitsQuery = { __typename?: 'Query', visits: Array<{ __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } }> };
+export type VisitsQuery = { __typename?: 'Query', visits: Array<{ __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, type?: { __typename?: 'VisitType', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: VisitTypeStatusEnum } | null, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } }> };
 
 export type VisitFindOneArgQueryVariables = Exact<{
   where?: InputMaybe<FindVisitWhere>;
 }>;
 
 
-export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
+export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, type?: { __typename?: 'VisitType', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: VisitTypeStatusEnum } | null, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
 
 export type FinishVisitMutationVariables = Exact<{
   updateStatusInput: UpdateStatusInput;
@@ -2491,7 +3096,14 @@ export type VisitQueryVariables = Exact<{
 }>;
 
 
-export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }> } };
+export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, type?: { __typename?: 'VisitType', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: VisitTypeStatusEnum } | null, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }> } };
+
+export type VisitTypesQueryVariables = Exact<{
+  where?: InputMaybe<FindVisitTypeWhere>;
+}>;
+
+
+export type VisitTypesQuery = { __typename?: 'Query', visitTypes: Array<{ __typename?: 'VisitType', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: VisitTypeStatusEnum }> };
 
 
 export const SigninDocument = gql`
@@ -2641,6 +3253,623 @@ export type ValidateUserTokenQueryHookResult = ReturnType<typeof useValidateUser
 export type ValidateUserTokenLazyQueryHookResult = ReturnType<typeof useValidateUserTokenLazyQuery>;
 export type ValidateUserTokenSuspenseQueryHookResult = ReturnType<typeof useValidateUserTokenSuspenseQuery>;
 export type ValidateUserTokenQueryResult = Apollo.QueryResult<ValidateUserTokenQuery, ValidateUserTokenQueryVariables>;
+export const CreateToolDocument = gql`
+    mutation CreateTool($createInput: CreateToolInput!) {
+  createTool(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolMutationFn = Apollo.MutationFunction<CreateToolMutation, CreateToolMutationVariables>;
+
+/**
+ * __useCreateToolMutation__
+ *
+ * To run a mutation, you first call `useCreateToolMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolMutation, { data, loading, error }] = useCreateToolMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolMutation, CreateToolMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolMutation, CreateToolMutationVariables>(CreateToolDocument, options);
+      }
+export type CreateToolMutationHookResult = ReturnType<typeof useCreateToolMutation>;
+export type CreateToolMutationResult = Apollo.MutationResult<CreateToolMutation>;
+export type CreateToolMutationOptions = Apollo.BaseMutationOptions<CreateToolMutation, CreateToolMutationVariables>;
+export const CreateToolVisitDocument = gql`
+    mutation CreateToolVisit($createInput: CreateVisitToolUnitInput!) {
+  createToolVisit(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolVisitMutationFn = Apollo.MutationFunction<CreateToolVisitMutation, CreateToolVisitMutationVariables>;
+
+/**
+ * __useCreateToolVisitMutation__
+ *
+ * To run a mutation, you first call `useCreateToolVisitMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolVisitMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolVisitMutation, { data, loading, error }] = useCreateToolVisitMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolVisitMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolVisitMutation, CreateToolVisitMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolVisitMutation, CreateToolVisitMutationVariables>(CreateToolVisitDocument, options);
+      }
+export type CreateToolVisitMutationHookResult = ReturnType<typeof useCreateToolVisitMutation>;
+export type CreateToolVisitMutationResult = Apollo.MutationResult<CreateToolVisitMutation>;
+export type CreateToolVisitMutationOptions = Apollo.BaseMutationOptions<CreateToolVisitMutation, CreateToolVisitMutationVariables>;
+export const CreateToolItemDocument = gql`
+    mutation CreateToolItem($createInput: CreateToolUnitInput!) {
+  createToolItem(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolItemMutationFn = Apollo.MutationFunction<CreateToolItemMutation, CreateToolItemMutationVariables>;
+
+/**
+ * __useCreateToolItemMutation__
+ *
+ * To run a mutation, you first call `useCreateToolItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolItemMutation, { data, loading, error }] = useCreateToolItemMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolItemMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolItemMutation, CreateToolItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolItemMutation, CreateToolItemMutationVariables>(CreateToolItemDocument, options);
+      }
+export type CreateToolItemMutationHookResult = ReturnType<typeof useCreateToolItemMutation>;
+export type CreateToolItemMutationResult = Apollo.MutationResult<CreateToolItemMutation>;
+export type CreateToolItemMutationOptions = Apollo.BaseMutationOptions<CreateToolItemMutation, CreateToolItemMutationVariables>;
+export const CreateToolPhotoDocument = gql`
+    mutation CreateToolPhoto($createInput: CreateToolUnitPhotoInput!) {
+  createToolPhoto(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolPhotoMutationFn = Apollo.MutationFunction<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>;
+
+/**
+ * __useCreateToolPhotoMutation__
+ *
+ * To run a mutation, you first call `useCreateToolPhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolPhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolPhotoMutation, { data, loading, error }] = useCreateToolPhotoMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolPhotoMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>(CreateToolPhotoDocument, options);
+      }
+export type CreateToolPhotoMutationHookResult = ReturnType<typeof useCreateToolPhotoMutation>;
+export type CreateToolPhotoMutationResult = Apollo.MutationResult<CreateToolPhotoMutation>;
+export type CreateToolPhotoMutationOptions = Apollo.BaseMutationOptions<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>;
+export const UpdateToolDocument = gql`
+    mutation UpdateTool($updateInput: UpdateToolInput!) {
+  updateTool(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolMutationFn = Apollo.MutationFunction<UpdateToolMutation, UpdateToolMutationVariables>;
+
+/**
+ * __useUpdateToolMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolMutation, { data, loading, error }] = useUpdateToolMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolMutation, UpdateToolMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolMutation, UpdateToolMutationVariables>(UpdateToolDocument, options);
+      }
+export type UpdateToolMutationHookResult = ReturnType<typeof useUpdateToolMutation>;
+export type UpdateToolMutationResult = Apollo.MutationResult<UpdateToolMutation>;
+export type UpdateToolMutationOptions = Apollo.BaseMutationOptions<UpdateToolMutation, UpdateToolMutationVariables>;
+export const UpdateToolItemDocument = gql`
+    mutation UpdateToolItem($updateInput: UpdateToolUnitInput!) {
+  updateToolItem(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolItemMutationFn = Apollo.MutationFunction<UpdateToolItemMutation, UpdateToolItemMutationVariables>;
+
+/**
+ * __useUpdateToolItemMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolItemMutation, { data, loading, error }] = useUpdateToolItemMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolItemMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolItemMutation, UpdateToolItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolItemMutation, UpdateToolItemMutationVariables>(UpdateToolItemDocument, options);
+      }
+export type UpdateToolItemMutationHookResult = ReturnType<typeof useUpdateToolItemMutation>;
+export type UpdateToolItemMutationResult = Apollo.MutationResult<UpdateToolItemMutation>;
+export type UpdateToolItemMutationOptions = Apollo.BaseMutationOptions<UpdateToolItemMutation, UpdateToolItemMutationVariables>;
+export const UpdateToolPhotoDocument = gql`
+    mutation UpdateToolPhoto($updateInput: UpdateToolUnitPhotoInput!) {
+  updateToolPhoto(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolPhotoMutationFn = Apollo.MutationFunction<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>;
+
+/**
+ * __useUpdateToolPhotoMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolPhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolPhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolPhotoMutation, { data, loading, error }] = useUpdateToolPhotoMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolPhotoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>(UpdateToolPhotoDocument, options);
+      }
+export type UpdateToolPhotoMutationHookResult = ReturnType<typeof useUpdateToolPhotoMutation>;
+export type UpdateToolPhotoMutationResult = Apollo.MutationResult<UpdateToolPhotoMutation>;
+export type UpdateToolPhotoMutationOptions = Apollo.BaseMutationOptions<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>;
+export const UpdateToolVisitDocument = gql`
+    mutation UpdateToolVisit($updateInput: UpdateVisitToolUnitInput!) {
+  updateToolVisit(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolVisitMutationFn = Apollo.MutationFunction<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>;
+
+/**
+ * __useUpdateToolVisitMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolVisitMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolVisitMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolVisitMutation, { data, loading, error }] = useUpdateToolVisitMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolVisitMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>(UpdateToolVisitDocument, options);
+      }
+export type UpdateToolVisitMutationHookResult = ReturnType<typeof useUpdateToolVisitMutation>;
+export type UpdateToolVisitMutationResult = Apollo.MutationResult<UpdateToolVisitMutation>;
+export type UpdateToolVisitMutationOptions = Apollo.BaseMutationOptions<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>;
+export const ToolsDocument = gql`
+    query Tools($orderBy: [FindToolOrderBy!], $where: FindToolWhere, $pagination: Pagination) {
+  Tools(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    reference
+    units {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      status
+    }
+  }
+  ToolsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useToolsQuery__
+ *
+ * To run a query within a React component, call `useToolsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsQuery(baseOptions?: Apollo.QueryHookOptions<ToolsQuery, ToolsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsQuery, ToolsQueryVariables>(ToolsDocument, options);
+      }
+export function useToolsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsQuery, ToolsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsQuery, ToolsQueryVariables>(ToolsDocument, options);
+        }
+export function useToolsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ToolsQuery, ToolsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ToolsQuery, ToolsQueryVariables>(ToolsDocument, options);
+        }
+export type ToolsQueryHookResult = ReturnType<typeof useToolsQuery>;
+export type ToolsLazyQueryHookResult = ReturnType<typeof useToolsLazyQuery>;
+export type ToolsSuspenseQueryHookResult = ReturnType<typeof useToolsSuspenseQuery>;
+export type ToolsQueryResult = Apollo.QueryResult<ToolsQuery, ToolsQueryVariables>;
+export const ToolsItemsDocument = gql`
+    query ToolsItems($orderBy: [FindToolUnitOrderBy!], $where: FindToolUnitWhere, $pagination: Pagination) {
+  ToolsItems(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    tool {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      reference
+    }
+    status
+  }
+  ToolsItemsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useToolsItemsQuery__
+ *
+ * To run a query within a React component, call `useToolsItemsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsItemsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsItemsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsItemsQuery(baseOptions?: Apollo.QueryHookOptions<ToolsItemsQuery, ToolsItemsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsItemsQuery, ToolsItemsQueryVariables>(ToolsItemsDocument, options);
+      }
+export function useToolsItemsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsItemsQuery, ToolsItemsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsItemsQuery, ToolsItemsQueryVariables>(ToolsItemsDocument, options);
+        }
+export function useToolsItemsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ToolsItemsQuery, ToolsItemsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ToolsItemsQuery, ToolsItemsQueryVariables>(ToolsItemsDocument, options);
+        }
+export type ToolsItemsQueryHookResult = ReturnType<typeof useToolsItemsQuery>;
+export type ToolsItemsLazyQueryHookResult = ReturnType<typeof useToolsItemsLazyQuery>;
+export type ToolsItemsSuspenseQueryHookResult = ReturnType<typeof useToolsItemsSuspenseQuery>;
+export type ToolsItemsQueryResult = Apollo.QueryResult<ToolsItemsQuery, ToolsItemsQueryVariables>;
+export const ToolsPhotosDocument = gql`
+    query ToolsPhotos($orderBy: [FindVisitToolUnitPhotoOrderBy!], $where: FindVisitToolUnitPhotoWhere, $pagination: Pagination) {
+  ToolsPhotos(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      fileUrl
+      url
+    }
+  }
+}
+    `;
+
+/**
+ * __useToolsPhotosQuery__
+ *
+ * To run a query within a React component, call `useToolsPhotosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsPhotosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsPhotosQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsPhotosQuery(baseOptions?: Apollo.QueryHookOptions<ToolsPhotosQuery, ToolsPhotosQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsPhotosQuery, ToolsPhotosQueryVariables>(ToolsPhotosDocument, options);
+      }
+export function useToolsPhotosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsPhotosQuery, ToolsPhotosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsPhotosQuery, ToolsPhotosQueryVariables>(ToolsPhotosDocument, options);
+        }
+export function useToolsPhotosSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ToolsPhotosQuery, ToolsPhotosQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ToolsPhotosQuery, ToolsPhotosQueryVariables>(ToolsPhotosDocument, options);
+        }
+export type ToolsPhotosQueryHookResult = ReturnType<typeof useToolsPhotosQuery>;
+export type ToolsPhotosLazyQueryHookResult = ReturnType<typeof useToolsPhotosLazyQuery>;
+export type ToolsPhotosSuspenseQueryHookResult = ReturnType<typeof useToolsPhotosSuspenseQuery>;
+export type ToolsPhotosQueryResult = Apollo.QueryResult<ToolsPhotosQuery, ToolsPhotosQueryVariables>;
+export const ToolsVisitsDocument = gql`
+    query ToolsVisits($orderBy: [FindVisitToolUnitOrderBy!], $where: FindVisitToolUnitWhere, $pagination: Pagination) {
+  ToolsVisits(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    usageDate
+    toolUnit {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      status
+    }
+  }
+  ToolsVisitsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useToolsVisitsQuery__
+ *
+ * To run a query within a React component, call `useToolsVisitsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsVisitsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsVisitsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsVisitsQuery(baseOptions?: Apollo.QueryHookOptions<ToolsVisitsQuery, ToolsVisitsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsVisitsQuery, ToolsVisitsQueryVariables>(ToolsVisitsDocument, options);
+      }
+export function useToolsVisitsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsVisitsQuery, ToolsVisitsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsVisitsQuery, ToolsVisitsQueryVariables>(ToolsVisitsDocument, options);
+        }
+export function useToolsVisitsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ToolsVisitsQuery, ToolsVisitsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ToolsVisitsQuery, ToolsVisitsQueryVariables>(ToolsVisitsDocument, options);
+        }
+export type ToolsVisitsQueryHookResult = ReturnType<typeof useToolsVisitsQuery>;
+export type ToolsVisitsLazyQueryHookResult = ReturnType<typeof useToolsVisitsLazyQuery>;
+export type ToolsVisitsSuspenseQueryHookResult = ReturnType<typeof useToolsVisitsSuspenseQuery>;
+export type ToolsVisitsQueryResult = Apollo.QueryResult<ToolsVisitsQuery, ToolsVisitsQueryVariables>;
+export const ToolsListDocument = gql`
+    query ToolsList($where: FindToolWhere) {
+  Tools(where: $where) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    reference
+    units {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      status
+    }
+  }
+}
+    `;
+
+/**
+ * __useToolsListQuery__
+ *
+ * To run a query within a React component, call `useToolsListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsListQuery({
+ *   variables: {
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useToolsListQuery(baseOptions?: Apollo.QueryHookOptions<ToolsListQuery, ToolsListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsListQuery, ToolsListQueryVariables>(ToolsListDocument, options);
+      }
+export function useToolsListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsListQuery, ToolsListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsListQuery, ToolsListQueryVariables>(ToolsListDocument, options);
+        }
+export function useToolsListSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ToolsListQuery, ToolsListQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ToolsListQuery, ToolsListQueryVariables>(ToolsListDocument, options);
+        }
+export type ToolsListQueryHookResult = ReturnType<typeof useToolsListQuery>;
+export type ToolsListLazyQueryHookResult = ReturnType<typeof useToolsListLazyQuery>;
+export type ToolsListSuspenseQueryHookResult = ReturnType<typeof useToolsListSuspenseQuery>;
+export type ToolsListQueryResult = Apollo.QueryResult<ToolsListQuery, ToolsListQueryVariables>;
+export const CreateToolVisitAllDocument = gql`
+    mutation CreateToolVisitAll($createVisitToolUnitAllInput: CreateVisitToolUnitAllInput!) {
+  createToolVisitAll(createVisitToolUnitAllInput: $createVisitToolUnitAllInput)
+}
+    `;
+export type CreateToolVisitAllMutationFn = Apollo.MutationFunction<CreateToolVisitAllMutation, CreateToolVisitAllMutationVariables>;
+
+/**
+ * __useCreateToolVisitAllMutation__
+ *
+ * To run a mutation, you first call `useCreateToolVisitAllMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolVisitAllMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolVisitAllMutation, { data, loading, error }] = useCreateToolVisitAllMutation({
+ *   variables: {
+ *      createVisitToolUnitAllInput: // value for 'createVisitToolUnitAllInput'
+ *   },
+ * });
+ */
+export function useCreateToolVisitAllMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolVisitAllMutation, CreateToolVisitAllMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolVisitAllMutation, CreateToolVisitAllMutationVariables>(CreateToolVisitAllDocument, options);
+      }
+export type CreateToolVisitAllMutationHookResult = ReturnType<typeof useCreateToolVisitAllMutation>;
+export type CreateToolVisitAllMutationResult = Apollo.MutationResult<CreateToolVisitAllMutation>;
+export type CreateToolVisitAllMutationOptions = Apollo.BaseMutationOptions<CreateToolVisitAllMutation, CreateToolVisitAllMutationVariables>;
+export const RemoveFileDocument = gql`
+    mutation RemoveFile($removeFileId: ID!) {
+  removeFile(id: $removeFileId)
+}
+    `;
+export type RemoveFileMutationFn = Apollo.MutationFunction<RemoveFileMutation, RemoveFileMutationVariables>;
+
+/**
+ * __useRemoveFileMutation__
+ *
+ * To run a mutation, you first call `useRemoveFileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveFileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeFileMutation, { data, loading, error }] = useRemoveFileMutation({
+ *   variables: {
+ *      removeFileId: // value for 'removeFileId'
+ *   },
+ * });
+ */
+export function useRemoveFileMutation(baseOptions?: Apollo.MutationHookOptions<RemoveFileMutation, RemoveFileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveFileMutation, RemoveFileMutationVariables>(RemoveFileDocument, options);
+      }
+export type RemoveFileMutationHookResult = ReturnType<typeof useRemoveFileMutation>;
+export type RemoveFileMutationResult = Apollo.MutationResult<RemoveFileMutation>;
+export type RemoveFileMutationOptions = Apollo.BaseMutationOptions<RemoveFileMutation, RemoveFileMutationVariables>;
 export const CreateVisitDocument = gql`
     mutation CreateVisit($createInput: CreateVisitInput!) {
   createVisit(createInput: $createInput) {
@@ -2720,6 +3949,15 @@ export const VisitsDocument = gql`
     longitude
     dateVisit
     status
+    type {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
     visitItem {
       id
       createdAt
@@ -2789,6 +4027,15 @@ export const VisitFindOneArgDocument = gql`
     longitude
     dateVisit
     status
+    type {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
     visitItem {
       id
       createdAt
@@ -2935,6 +4182,15 @@ export const VisitDocument = gql`
     longitude
     dateVisit
     status
+    type {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
     visitItem {
       id
       createdAt
@@ -2995,3 +4251,49 @@ export type VisitQueryHookResult = ReturnType<typeof useVisitQuery>;
 export type VisitLazyQueryHookResult = ReturnType<typeof useVisitLazyQuery>;
 export type VisitSuspenseQueryHookResult = ReturnType<typeof useVisitSuspenseQuery>;
 export type VisitQueryResult = Apollo.QueryResult<VisitQuery, VisitQueryVariables>;
+export const VisitTypesDocument = gql`
+    query VisitTypes($where: FindVisitTypeWhere) {
+  visitTypes(where: $where) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+  }
+}
+    `;
+
+/**
+ * __useVisitTypesQuery__
+ *
+ * To run a query within a React component, call `useVisitTypesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVisitTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVisitTypesQuery({
+ *   variables: {
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useVisitTypesQuery(baseOptions?: Apollo.QueryHookOptions<VisitTypesQuery, VisitTypesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<VisitTypesQuery, VisitTypesQueryVariables>(VisitTypesDocument, options);
+      }
+export function useVisitTypesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<VisitTypesQuery, VisitTypesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<VisitTypesQuery, VisitTypesQueryVariables>(VisitTypesDocument, options);
+        }
+export function useVisitTypesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<VisitTypesQuery, VisitTypesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<VisitTypesQuery, VisitTypesQueryVariables>(VisitTypesDocument, options);
+        }
+export type VisitTypesQueryHookResult = ReturnType<typeof useVisitTypesQuery>;
+export type VisitTypesLazyQueryHookResult = ReturnType<typeof useVisitTypesLazyQuery>;
+export type VisitTypesSuspenseQueryHookResult = ReturnType<typeof useVisitTypesSuspenseQuery>;
+export type VisitTypesQueryResult = Apollo.QueryResult<VisitTypesQuery, VisitTypesQueryVariables>;

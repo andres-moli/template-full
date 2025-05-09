@@ -15,6 +15,7 @@ import { HttpService } from '@nestjs/axios';
 import { VisitComentService } from '../../visit-coment/services/visit-coment.service';
 import { UpdateStatusInput } from '../dto/inputs/update-status-visit.dto';
 import { VisitComent } from '../../visit-coment/entities/visit-coment.entity';
+import { VisitToolVisittService } from '../../tools/tool-visit/service/tool-visit-service';
 export declare const serviceStructure: import("src/patterns/crud-pattern/interfaces/structures/crud-service-structure.interface").ICrudServiceStructure<unknown, Visit, CreateVisitInput, UpdateVisitInput, FindVisitArgs, IContext>;
 declare const VisitService_base: import("@nestjs/common").Type<import("../../../../patterns/crud-pattern/interfaces/crud-service.interface").ICrudService<unknown, Visit, CreateVisitInput, UpdateVisitInput, FindVisitArgs, IContext>>;
 export declare class VisitService extends VisitService_base {
@@ -25,7 +26,8 @@ export declare class VisitService extends VisitService_base {
     private readonly mailService;
     private readonly httpService;
     private readonly visitComentService;
-    constructor(clientService: ClientService, usersService: UsersService, parameterService: ParameterService, visitTypeService: VisitTypeService, mailService: MailService, httpService: HttpService, visitComentService: VisitComentService);
+    private readonly visitToolVisittService;
+    constructor(clientService: ClientService, usersService: UsersService, parameterService: ParameterService, visitTypeService: VisitTypeService, mailService: MailService, httpService: HttpService, visitComentService: VisitComentService, visitToolVisittService: VisitToolVisittService);
     beforeCreate(context: IContext, repository: Repository<Visit>, entity: Visit, createInput: CreateVisitInput): Promise<void>;
     beforeUpdate(context: IContext, repository: Repository<Visit>, entity: Visit, updateInput: UpdateVisitInput): Promise<void>;
     calculateTotalHours(visit: Visit): Promise<number>;

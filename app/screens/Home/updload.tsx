@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Modal, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
-const UploadProgressModal = ({ visible, progress }) => {
+const UploadProgressModal = ({ visible, progress }: {visible: boolean, progress: number }) => {
   return (
     <Modal transparent={true} visible={visible} animationType="fade">
       <View style={styles.modalContainer}>

@@ -8,13 +8,20 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import {useColor} from '../../Constants/Color';
+import { useColor } from '../../Constants/Color';
 import { Ionicons } from '@expo/vector-icons';
+
 const { color } = useColor();
+
+export interface OptionsSelect {
+  key: string;
+  value: string;
+}
+
 interface SelectProps {
-  options: string[];
+  options: OptionsSelect[];
   placeholder?: string;
-  onSelect: (selectedOption: string) => void;
+  onSelect: (selectedOption: string | null) => void;
 }
 
 const Select: React.FC<SelectProps> = ({ options, placeholder, onSelect }) => {
@@ -23,24 +30,34 @@ const Select: React.FC<SelectProps> = ({ options, placeholder, onSelect }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const filteredOptions = options.filter(option =>
-    option.toLowerCase().includes(searchTerm.toLowerCase())
+    option.value.toString().toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSelect = (option: string) => {
-    setSelectedOption(option);
-    onSelect(option);
+  const handleSelect = (option: OptionsSelect) => {
+    setSelectedOption(option.value);
+    onSelect(option.key);
+    setIsVisible(false);
+    setSearchTerm('');
+  };
+
+  const handleClearSelection = () => {
+    setSelectedOption(null);
+    onSelect(null);
     setIsVisible(false);
     setSearchTerm('');
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.selectText}>
+        {placeholder || 'Seleccione una opción'}
+      </Text>
       <TouchableOpacity
         style={styles.selectBox}
         onPress={() => setIsVisible(true)}
       >
-        <Text style={styles.selectText}>
-          {selectedOption ? selectedOption : placeholder}
+        <Text style={styles.selectPlaceholder}>
+          {selectedOption || 'Seleccione una opción'}
         </Text>
       </TouchableOpacity>
 
@@ -53,7 +70,12 @@ const Select: React.FC<SelectProps> = ({ options, placeholder, onSelect }) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.searchContainer}>
-              <Ionicons name="search" size={20} color={color.lightPink} style={styles.searchIcon} />
+              <Ionicons
+                name="search"
+                size={20}
+                color={color.lightPink}
+                style={styles.searchIcon}
+              />
               <TextInput
                 style={styles.searchInput}
                 placeholder="Buscar..."
@@ -62,9 +84,10 @@ const Select: React.FC<SelectProps> = ({ options, placeholder, onSelect }) => {
                 onChangeText={setSearchTerm}
               />
             </View>
+
             <FlatList
               data={filteredOptions}
-              keyExtractor={(item) => item}
+              keyExtractor={(item) => item.key.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <TouchableOpacity
@@ -72,12 +95,26 @@ const Select: React.FC<SelectProps> = ({ options, placeholder, onSelect }) => {
                   onPress={() => handleSelect(item)}
                 >
                   <View style={styles.radioContainer}>
-                    <View style={selectedOption === item ? styles.selectedRadio : styles.unselectedRadio} />
-                    <Text style={styles.optionText}>{item}</Text>
+                    <View
+                      style={
+                        selectedOption === item.value
+                          ? styles.selectedRadio
+                          : styles.unselectedRadio
+                      }
+                    />
+                    <Text style={styles.optionText}>{item.value}</Text>
                   </View>
                 </TouchableOpacity>
               )}
             />
+
+            <TouchableOpacity
+              style={[styles.closeButton, { backgroundColor: color.coral || '#ccc', marginBottom: 10 }]}
+              onPress={handleClearSelection}
+            >
+              <Text style={styles.closeButtonText}>Borrar selección</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setIsVisible(false)}
@@ -94,6 +131,7 @@ const Select: React.FC<SelectProps> = ({ options, placeholder, onSelect }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    paddingBottom: 20,
   },
   selectBox: {
     borderWidth: 1,
@@ -104,16 +142,21 @@ const styles = StyleSheet.create({
   },
   selectText: {
     fontSize: 16,
-    color: '#333',
+    color: color.primary,
+    fontWeight: 'bold',
+  },
+  selectPlaceholder: {
+    fontSize: 16,
+    color: color.darkGray,
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'flex-end', // Asegura que el modal se desplace desde la parte inferior
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro trasparente
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
     width: '100%',
-    height: '50%', // Ajustar altura del modal
+    height: '50%',
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -125,7 +168,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5, // Para Android
+    elevation: 5,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -141,7 +184,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     padding: 5,
-    color: color.lightPink
+    color: color.lightPink,
   },
   option: {
     padding: 10,
@@ -151,7 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   closeButton: {
-    marginTop: 15,
+    marginTop: 5,
     backgroundColor: color.lightPink,
     paddingVertical: 10,
     borderRadius: 19,
@@ -169,7 +212,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: color.lightPink, // Color del radio seleccionado
+    backgroundColor: color.lightPink,
     marginRight: 10,
   },
   unselectedRadio: {
@@ -177,7 +220,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: color.darkGray, // Color del radio no seleccionado
+    borderColor: color.darkGray,
     marginRight: 10,
   },
 });

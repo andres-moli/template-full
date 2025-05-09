@@ -54,6 +54,19 @@ let FilesService = class FilesService extends (0, data_service_mixin_1.DataServi
         const result = await repository.save(fileInfo);
         return result;
     }
+    async deleteFile(context, id) {
+        const repository = this.getRepository(context);
+        const fileInfo = await repository.findOneBy({ id });
+        if (!fileInfo) {
+            throw new Error(`Archivo con ID ${id} no encontrado.`);
+        }
+        const filePath = (0, path_1.join)(__dirname, '..', '..', '..', '..', fileInfo.fileUrl);
+        if ((0, fs_1.existsSync)(filePath)) {
+            (0, fs_1.unlinkSync)(filePath);
+        }
+        await repository.softDelete({ id });
+        return 'TODO BIEN';
+    }
     async download(context, id, res) {
         const repository = this.getRepository(context);
         const entity = await repository.findOne({ where: { id }, select: ["fileBuffer", "fileExtension", "fileMode", "fileMongoId", "fileName"] });

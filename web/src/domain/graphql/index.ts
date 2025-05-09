@@ -139,6 +139,14 @@ export type CreateDocumentTypeInput = {
   document: Scalars['String'];
 };
 
+export type CreateDocumentoUsuarioInput = {
+  estado?: EstadoDocumento;
+  fileId: Scalars['String'];
+  observaciones?: InputMaybe<Scalars['String']>;
+  tipoDocumentoId: Scalars['String'];
+  usuarioId: Scalars['String'];
+};
+
 export type CreateDummyInput = {
   email?: InputMaybe<Scalars['String']>;
   firstField: Scalars['String'];
@@ -248,6 +256,29 @@ export type CreateRoleInput = {
   name: Scalars['String'];
 };
 
+export type CreateTipoDocumentoInput = {
+  activo?: Scalars['Boolean'];
+  descripcion?: InputMaybe<Scalars['String']>;
+  nombre: Scalars['String'];
+  obligatorio?: Scalars['Boolean'];
+};
+
+export type CreateToolInput = {
+  name: Scalars['String'];
+  reference: Scalars['String'];
+};
+
+export type CreateToolUnitInput = {
+  name: Scalars['String'];
+  status?: ToolUnitStatusEnum;
+  toolId: Scalars['ID'];
+};
+
+export type CreateToolUnitPhotoInput = {
+  fileId: Scalars['String'];
+  visitToolUnitId: Scalars['ID'];
+};
+
 export type CreateUserInput = {
   address: Scalars['String'];
   cityId?: InputMaybe<Scalars['ID']>;
@@ -276,6 +307,7 @@ export type CreateVisitComentInput = {
   date?: InputMaybe<Scalars['DateTime']>;
   dateFull?: InputMaybe<Scalars['DateTime']>;
   description?: InputMaybe<Scalars['String']>;
+  fileId?: InputMaybe<Scalars['String']>;
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
@@ -289,12 +321,23 @@ export type CreateVisitComentInput = {
 export type CreateVisitInput = {
   dateVisit: Scalars['DateTime'];
   description?: InputMaybe<Scalars['String']>;
+  fileId?: InputMaybe<Scalars['String']>;
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
   mocked?: InputMaybe<Scalars['Boolean']>;
   status: StatusVisitEnum;
+  tools?: InputMaybe<Array<CreateVisitToolUnitInput>>;
+  typeId: Scalars['String'];
   userId: Scalars['String'];
+};
+
+export type CreateVisitToolUnitInput = {
+  /** URLs de las fotos */
+  photoUrls?: InputMaybe<Array<Scalars['String']>>;
+  toolUnitId: Scalars['ID'];
+  usageDate?: InputMaybe<Scalars['DateTime']>;
+  visitId: Scalars['ID'];
 };
 
 export type CreateVisitTypeInput = {
@@ -333,6 +376,19 @@ export type DocumentType = {
   document: Scalars['String'];
   id: Scalars['ID'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type DocumentoUsuario = {
+  __typename?: 'DocumentoUsuario';
+  createdAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  estado: EstadoDocumento;
+  file: FileInfo;
+  id: Scalars['ID'];
+  observaciones?: Maybe<Scalars['String']>;
+  tipoDocumento: TipoDocumento;
+  updatedAt: Scalars['DateTime'];
+  usuario: User;
 };
 
 export type DoubleVerificationInput = {
@@ -407,6 +463,12 @@ export type EmailRecipient = {
   type: RecipientType;
 };
 
+export enum EstadoDocumento {
+  Aceptado = 'ACEPTADO',
+  Pendiente = 'PENDIENTE',
+  Rechazado = 'RECHAZADO'
+}
+
 export type FacturaPorClienteDto = {
   tem_cedula?: InputMaybe<Scalars['String']>;
   tem_fecha_desde?: InputMaybe<Scalars['String']>;
@@ -465,6 +527,17 @@ export type FindClientWhere = {
   user?: InputMaybe<StringFilter>;
 };
 
+export type FindDocOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindDocWhere = {
+  _and?: InputMaybe<Array<FindDocWhere>>;
+  _or?: InputMaybe<Array<FindDocWhere>>;
+  tipoDocumento?: InputMaybe<StringFilter>;
+  usuario?: InputMaybe<StringFilter>;
+};
+
 export type FindDummyFamilyWhere = {
   _and?: InputMaybe<Array<FindDummyFamilyWhere>>;
   _or?: InputMaybe<Array<FindDummyFamilyWhere>>;
@@ -515,6 +588,29 @@ export type FindFletesWhere = {
   status?: InputMaybe<StringFilter>;
 };
 
+export type FindToolOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindToolUnitOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindToolUnitWhere = {
+  _and?: InputMaybe<Array<FindToolUnitWhere>>;
+  _or?: InputMaybe<Array<FindToolUnitWhere>>;
+  serialNumber?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
+};
+
+export type FindToolWhere = {
+  _and?: InputMaybe<Array<FindToolWhere>>;
+  _or?: InputMaybe<Array<FindToolWhere>>;
+  description?: InputMaybe<StringFilter>;
+  name?: InputMaybe<StringFilter>;
+  type?: InputMaybe<StringFilter>;
+};
+
 export type FindUsersOrderBy = {
   createdAt?: InputMaybe<OrderTypes>;
   email?: InputMaybe<OrderTypes>;
@@ -548,6 +644,28 @@ export type FindVisitComentWhere = {
 export type FindVisitOrderBy = {
   createdAt?: InputMaybe<OrderTypes>;
   dateVisit?: InputMaybe<OrderTypes>;
+};
+
+export type FindVisitToolUnitOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindVisitToolUnitPhotoOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindVisitToolUnitPhotoWhere = {
+  _and?: InputMaybe<Array<FindVisitToolUnitPhotoWhere>>;
+  _or?: InputMaybe<Array<FindVisitToolUnitPhotoWhere>>;
+  url?: InputMaybe<StringFilter>;
+  visitToolUnit?: InputMaybe<StringFilter>;
+};
+
+export type FindVisitToolUnitWhere = {
+  _and?: InputMaybe<Array<FindVisitToolUnitWhere>>;
+  _or?: InputMaybe<Array<FindVisitToolUnitWhere>>;
+  comment?: InputMaybe<StringFilter>;
+  createdAt?: InputMaybe<DateFilter>;
 };
 
 export type FindVisitTypeOrderBy = {
@@ -694,6 +812,7 @@ export type Mutation = {
   createClientContact: ClientContact;
   createDefaultRoles: Array<Role>;
   createDocumentType: DocumentType;
+  createDocumentoUsuario: DocumentoUsuario;
   createDummiesX: Array<Dummy>;
   createDummy: Dummy;
   createFletes: Fletes;
@@ -708,6 +827,11 @@ export type Mutation = {
   createProfile: Profile;
   createRole: Role;
   createRoleFx: Array<RoleFx>;
+  createTipoDocumento: TipoDocumento;
+  createTool: Tool;
+  createToolItem: ToolUnit;
+  createToolPhoto: ToolUnitPhoto;
+  createToolVisit: VisitToolUnit;
   createUser: User;
   createVisit: Visit;
   createVisitComent: VisitComent;
@@ -720,6 +844,7 @@ export type Mutation = {
   removeClient: Client;
   removeClientContact: ClientContact;
   removeDocumentType: DocumentType;
+  removeDocumentoUsuario: DocumentoUsuario;
   removeDummy: Dummy;
   removeFletes: Fletes;
   removeGroup: Group;
@@ -732,6 +857,11 @@ export type Mutation = {
   removeProfile: Profile;
   removeRole: Role;
   removeRoleFx: Array<Scalars['String']>;
+  removeTipoDocumento: TipoDocumento;
+  removeTool: Tool;
+  removeToolItem: ToolUnit;
+  removeToolPhoto: ToolUnitPhoto;
+  removeToolVisit: VisitToolUnit;
   removeUser: User;
   removeUserRole: User;
   removeVisit: Visit;
@@ -751,6 +881,7 @@ export type Mutation = {
   updateClient: Client;
   updateClientContact: ClientContact;
   updateDocumentType: DocumentType;
+  updateDocumentoUsuario: DocumentoUsuario;
   updateDummy: Dummy;
   updateFletes: Fletes;
   updateGroup: Group;
@@ -763,6 +894,11 @@ export type Mutation = {
   updatePositionInput: Position;
   updateProfile: Profile;
   updateRole: Role;
+  updateTipoDocumento: TipoDocumento;
+  updateTool: Tool;
+  updateToolItem: ToolUnit;
+  updateToolPhoto: ToolUnitPhoto;
+  updateToolVisit: VisitToolUnit;
   updateUser: User;
   updateUserInformation: User;
   updateUserPassword: User;
@@ -799,6 +935,11 @@ export type MutationCreateClientContactArgs = {
 
 export type MutationCreateDocumentTypeArgs = {
   createInput: CreateDocumentTypeInput;
+};
+
+
+export type MutationCreateDocumentoUsuarioArgs = {
+  createInput: CreateDocumentoUsuarioInput;
 };
 
 
@@ -867,6 +1008,31 @@ export type MutationCreateRoleFxArgs = {
 };
 
 
+export type MutationCreateTipoDocumentoArgs = {
+  createInput: CreateTipoDocumentoInput;
+};
+
+
+export type MutationCreateToolArgs = {
+  createInput: CreateToolInput;
+};
+
+
+export type MutationCreateToolItemArgs = {
+  createInput: CreateToolUnitInput;
+};
+
+
+export type MutationCreateToolPhotoArgs = {
+  createInput: CreateToolUnitPhotoInput;
+};
+
+
+export type MutationCreateToolVisitArgs = {
+  createInput: CreateVisitToolUnitInput;
+};
+
+
 export type MutationCreateUserArgs = {
   createInput: CreateUserInput;
 };
@@ -918,6 +1084,11 @@ export type MutationRemoveClientContactArgs = {
 
 
 export type MutationRemoveDocumentTypeArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationRemoveDocumentoUsuarioArgs = {
   id: Scalars['ID'];
 };
 
@@ -979,6 +1150,31 @@ export type MutationRemoveRoleArgs = {
 
 export type MutationRemoveRoleFxArgs = {
   removeRoleFxInput: CreateAndRemoveRoleFxInput;
+};
+
+
+export type MutationRemoveTipoDocumentoArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationRemoveToolArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationRemoveToolItemArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationRemoveToolPhotoArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationRemoveToolVisitArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -1073,6 +1269,11 @@ export type MutationUpdateDocumentTypeArgs = {
 };
 
 
+export type MutationUpdateDocumentoUsuarioArgs = {
+  updateInput: UpdateDocumentoUsuarioInput;
+};
+
+
 export type MutationUpdateDummyArgs = {
   updateInput: UpdateDummyInput;
 };
@@ -1130,6 +1331,31 @@ export type MutationUpdateProfileArgs = {
 
 export type MutationUpdateRoleArgs = {
   updateInput: UpdateRoleInput;
+};
+
+
+export type MutationUpdateTipoDocumentoArgs = {
+  updateInput: UpdateTipoDocumentoInput;
+};
+
+
+export type MutationUpdateToolArgs = {
+  updateInput: UpdateToolInput;
+};
+
+
+export type MutationUpdateToolItemArgs = {
+  updateInput: UpdateToolUnitInput;
+};
+
+
+export type MutationUpdateToolPhotoArgs = {
+  updateInput: UpdateToolUnitPhotoInput;
+};
+
+
+export type MutationUpdateToolVisitArgs = {
+  updateInput: UpdateVisitToolUnitInput;
 };
 
 
@@ -1317,6 +1543,18 @@ export type Query = {
   NotificationGroup: NotificationGroup;
   NotificationGroups: Array<NotificationGroup>;
   NotificationGroupsCount: MetadataPagination;
+  Tool: Tool;
+  ToolItem: ToolUnit;
+  ToolPhoto: ToolUnitPhoto;
+  ToolVisit: VisitToolUnit;
+  Tools: Array<Tool>;
+  ToolsCount: MetadataPagination;
+  ToolsItems: Array<ToolUnit>;
+  ToolsItemsCount: MetadataPagination;
+  ToolsPhotos: Array<ToolUnitPhoto>;
+  ToolsPhotosCount: MetadataPagination;
+  ToolsVisits: Array<VisitToolUnit>;
+  ToolsVisitsCount: MetadataPagination;
   approvalJwt: AuthResponse;
   cities: Array<City>;
   city: City;
@@ -1335,6 +1573,9 @@ export type Query = {
   documentType: DocumentType;
   documentTypes: Array<DocumentType>;
   documentTypesCount: MetadataPagination;
+  documentoUsuario: DocumentoUsuario;
+  documentosUsuario: Array<DocumentoUsuario>;
+  documentosUsuarioCount: MetadataPagination;
   dummies: Array<Dummy>;
   dummiesCount: MetadataPagination;
   dummy: Dummy;
@@ -1380,6 +1621,9 @@ export type Query = {
   rolesFx: Array<RoleFx>;
   rolesFxCount: MetadataPagination;
   sendEmailRecovryPassword: Scalars['String'];
+  tipoDocumento: TipoDocumento;
+  tiposDocumento: Array<TipoDocumento>;
+  tiposDocumentoCount: MetadataPagination;
   user: User;
   users: Array<User>;
   usersCount: MetadataPagination;
@@ -1435,6 +1679,82 @@ export type QueryNotificationGroupsArgs = {
 
 export type QueryNotificationGroupsCountArgs = {
   pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryToolArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryToolItemArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryToolPhotoArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryToolVisitArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryToolsArgs = {
+  orderBy?: InputMaybe<Array<FindToolOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolWhere>;
+};
+
+
+export type QueryToolsCountArgs = {
+  orderBy?: InputMaybe<Array<FindToolOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolWhere>;
+};
+
+
+export type QueryToolsItemsArgs = {
+  orderBy?: InputMaybe<Array<FindToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolUnitWhere>;
+};
+
+
+export type QueryToolsItemsCountArgs = {
+  orderBy?: InputMaybe<Array<FindToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindToolUnitWhere>;
+};
+
+
+export type QueryToolsPhotosArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitPhotoOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitPhotoWhere>;
+};
+
+
+export type QueryToolsPhotosCountArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitPhotoOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitPhotoWhere>;
+};
+
+
+export type QueryToolsVisitsArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitWhere>;
+};
+
+
+export type QueryToolsVisitsCountArgs = {
+  orderBy?: InputMaybe<Array<FindVisitToolUnitOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindVisitToolUnitWhere>;
 };
 
 
@@ -1537,6 +1857,25 @@ export type QueryDocumentTypesArgs = {
 
 export type QueryDocumentTypesCountArgs = {
   pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryDocumentoUsuarioArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryDocumentosUsuarioArgs = {
+  orderBy?: InputMaybe<Array<FindDocOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindDocWhere>;
+};
+
+
+export type QueryDocumentosUsuarioCountArgs = {
+  orderBy?: InputMaybe<Array<FindDocOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindDocWhere>;
 };
 
 
@@ -1748,6 +2087,21 @@ export type QueryRolesFxCountArgs = {
 
 export type QuerySendEmailRecovryPasswordArgs = {
   email: Scalars['String'];
+};
+
+
+export type QueryTipoDocumentoArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryTiposDocumentoArgs = {
+  pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryTiposDocumentoCountArgs = {
+  pagination?: InputMaybe<Pagination>;
 };
 
 
@@ -1986,6 +2340,65 @@ export type Subscription = {
   messageReceived: Message;
 };
 
+export type TipoDocumento = {
+  __typename?: 'TipoDocumento';
+  activo: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  descripcion?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  nombre: Scalars['String'];
+  obligatorio: Scalars['Boolean'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type Tool = {
+  __typename?: 'Tool';
+  createdAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  reference: Scalars['String'];
+  units?: Maybe<Array<ToolUnit>>;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type ToolUnit = {
+  __typename?: 'ToolUnit';
+  createdAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status: ToolUnitStatusEnum;
+  tool: Tool;
+  updatedAt: Scalars['DateTime'];
+  visits?: Maybe<Array<VisitToolUnit>>;
+};
+
+export type ToolUnitPhoto = {
+  __typename?: 'ToolUnitPhoto';
+  createdAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  file: FileInfo;
+  id: Scalars['ID'];
+  updatedAt: Scalars['DateTime'];
+  visitToolUnit: VisitToolUnit;
+};
+
+/** Estado actual de la unidad de herramienta. */
+export enum ToolUnitStatusEnum {
+  /** Disponible */
+  Available = 'AVAILABLE',
+  /** Dañada */
+  Damaged = 'DAMAGED',
+  /** En uso */
+  InUse = 'IN_USE',
+  /** Perdida */
+  Lost = 'LOST',
+  /** En mantenimiento */
+  Maintenance = 'MAINTENANCE'
+}
+
 export enum TypeClientEnum {
   ClienteFinal = 'CLIENTE_FINAL',
   Distribuidor = 'DISTRIBUIDOR',
@@ -2047,6 +2460,15 @@ export type UpdateClientInput = {
 export type UpdateDocumentTypeInput = {
   document?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
+};
+
+export type UpdateDocumentoUsuarioInput = {
+  estado?: InputMaybe<EstadoDocumento>;
+  fileId?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
+  observaciones?: InputMaybe<Scalars['String']>;
+  tipoDocumentoId?: InputMaybe<Scalars['String']>;
+  usuarioId?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateDummyInput = {
@@ -2170,12 +2592,40 @@ export type UpdateRoleInput = {
 export type UpdateStatusInput = {
   dateVisit: Scalars['DateTime'];
   description?: InputMaybe<Scalars['String']>;
+  fileId?: InputMaybe<Scalars['String']>;
   id: Scalars['String'];
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
   mocked?: InputMaybe<Scalars['Boolean']>;
   status: StatusVisitEnum;
+};
+
+export type UpdateTipoDocumentoInput = {
+  activo?: InputMaybe<Scalars['Boolean']>;
+  descripcion?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
+  nombre?: InputMaybe<Scalars['String']>;
+  obligatorio?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type UpdateToolInput = {
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
+  reference?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateToolUnitInput = {
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<ToolUnitStatusEnum>;
+  toolId?: InputMaybe<Scalars['ID']>;
+};
+
+export type UpdateToolUnitPhotoInput = {
+  fileId?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  visitToolUnitId?: InputMaybe<Scalars['ID']>;
 };
 
 export type UpdateUserInformationInput = {
@@ -2222,6 +2672,7 @@ export type UpdateVisitComentInput = {
   date?: InputMaybe<Scalars['DateTime']>;
   dateFull?: InputMaybe<Scalars['DateTime']>;
   description?: InputMaybe<Scalars['String']>;
+  fileId?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
@@ -2236,13 +2687,25 @@ export type UpdateVisitComentInput = {
 export type UpdateVisitInput = {
   dateVisit?: InputMaybe<Scalars['DateTime']>;
   description?: InputMaybe<Scalars['String']>;
+  fileId?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   latitude?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
   longitude?: InputMaybe<Scalars['String']>;
   mocked?: InputMaybe<Scalars['Boolean']>;
   status?: InputMaybe<StatusVisitEnum>;
+  tools?: InputMaybe<Array<CreateVisitToolUnitInput>>;
+  typeId?: InputMaybe<Scalars['String']>;
   userId?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateVisitToolUnitInput = {
+  id: Scalars['ID'];
+  /** URLs de las fotos */
+  photoUrls?: InputMaybe<Array<Scalars['String']>>;
+  toolUnitId?: InputMaybe<Scalars['ID']>;
+  usageDate?: InputMaybe<Scalars['DateTime']>;
+  visitId?: InputMaybe<Scalars['ID']>;
 };
 
 export type UpdateVisitTypeInput = {
@@ -2262,6 +2725,7 @@ export type User = {
   dateIssue?: Maybe<Scalars['DateTime']>;
   deletedAt?: Maybe<Scalars['DateTime']>;
   department?: Maybe<Department>;
+  documentos?: Maybe<Array<DocumentoUsuario>>;
   email: Scalars['String'];
   emailVerification: Scalars['Boolean'];
   fullName: Scalars['String'];
@@ -2345,6 +2809,8 @@ export type Visit = {
   longitude?: Maybe<Scalars['String']>;
   mocked?: Maybe<Scalars['Boolean']>;
   status: StatusVisitEnum;
+  toolUnitsUsed?: Maybe<Array<VisitToolUnit>>;
+  type?: Maybe<VisitType>;
   updatedAt: Scalars['DateTime'];
   user: User;
   visitItem: Array<VisitComent>;
@@ -2357,6 +2823,7 @@ export type VisitComent = {
   dateFull?: Maybe<Scalars['DateTime']>;
   deletedAt?: Maybe<Scalars['DateTime']>;
   description: Scalars['String'];
+  file?: Maybe<FileInfo>;
   getFormattedTime?: Maybe<Scalars['DateTime']>;
   id: Scalars['ID'];
   latitude?: Maybe<Scalars['String']>;
@@ -2386,6 +2853,18 @@ export type VisitDashboardModel = {
   __typename?: 'VisitDashboardModel';
   earrings: Array<Visit>;
   realized: Array<Visit>;
+};
+
+export type VisitToolUnit = {
+  __typename?: 'VisitToolUnit';
+  createdAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['ID'];
+  photos?: Maybe<Array<ToolUnitPhoto>>;
+  toolUnit: ToolUnit;
+  updatedAt: Scalars['DateTime'];
+  usageDate: Scalars['DateTime'];
+  visit: Visit;
 };
 
 export type VisitType = {
@@ -2433,6 +2912,142 @@ export type SigninMutation = { __typename?: 'Mutation', signin: { __typename?: '
 
 export type UserFragmentFragment = { __typename?: 'User', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name?: string | null, middleName?: string | null, lastName?: string | null, secondSurname?: string | null, email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, dateIssue?: any | null, legalRepresentativeIdentificationType?: UserDocumentTypes | null, legalRepresentativeIdentificationNumber?: string | null, phoneCountryCode?: string | null, phoneNumber?: string | null, address?: string | null, hasRural?: boolean | null, confirmationCode?: string | null, position?: string | null, status: UserStatusTypes, phoneVerification: boolean, emailVerification: boolean, type: UserTypes, fullName: string, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, department?: { __typename?: 'Department', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, country?: { __typename?: 'Country', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, userRoles: Array<{ __typename?: 'Role', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, defaultForType?: UserTypes | null, users?: Array<{ __typename?: 'User', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name?: string | null, middleName?: string | null, lastName?: string | null, secondSurname?: string | null, email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, dateIssue?: any | null, legalRepresentativeIdentificationType?: UserDocumentTypes | null, legalRepresentativeIdentificationNumber?: string | null, phoneCountryCode?: string | null, phoneNumber?: string | null, address?: string | null, hasRural?: boolean | null, confirmationCode?: string | null, position?: string | null, status: UserStatusTypes, phoneVerification: boolean, emailVerification: boolean, type: UserTypes, fullName: string }> | null, roleFx: Array<{ __typename?: 'RoleFx', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, permission: string }> }>, userRolesFx: Array<{ __typename?: 'RoleFx', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, permission: string, role?: { __typename?: 'Role', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, defaultForType?: UserTypes | null } | null }> };
 
+export type CreateTipoDocumentoMutationVariables = Exact<{
+  createInput: CreateTipoDocumentoInput;
+}>;
+
+
+export type CreateTipoDocumentoMutation = { __typename?: 'Mutation', createTipoDocumento: { __typename?: 'TipoDocumento', id: string } };
+
+export type UpdateTipoDocumentoMutationVariables = Exact<{
+  updateInput: UpdateTipoDocumentoInput;
+}>;
+
+
+export type UpdateTipoDocumentoMutation = { __typename?: 'Mutation', updateTipoDocumento: { __typename?: 'TipoDocumento', id: string } };
+
+export type DocumentosUsuarioQueryVariables = Exact<{
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindDocWhere>;
+  orderBy?: InputMaybe<Array<FindDocOrderBy> | FindDocOrderBy>;
+}>;
+
+
+export type DocumentosUsuarioQuery = { __typename?: 'Query', documentosUsuario: Array<{ __typename?: 'DocumentoUsuario', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: EstadoDocumento, observaciones?: string | null, usuario: { __typename?: 'User', email: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, id: string }, tipoDocumento: { __typename?: 'TipoDocumento', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, obligatorio: boolean, activo: boolean }, file: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } }>, documentosUsuarioCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type TiposDocumentoQueryVariables = Exact<{
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type TiposDocumentoQuery = { __typename?: 'Query', tiposDocumento: Array<{ __typename?: 'TipoDocumento', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, obligatorio: boolean, activo: boolean }>, tiposDocumentoCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type CreateDocumentoUsuarioMutationVariables = Exact<{
+  createInput: CreateDocumentoUsuarioInput;
+}>;
+
+
+export type CreateDocumentoUsuarioMutation = { __typename?: 'Mutation', createDocumentoUsuario: { __typename?: 'DocumentoUsuario', id: string } };
+
+export type UpdateDocumentoUsuarioMutationVariables = Exact<{
+  updateInput: UpdateDocumentoUsuarioInput;
+}>;
+
+
+export type UpdateDocumentoUsuarioMutation = { __typename?: 'Mutation', updateDocumentoUsuario: { __typename?: 'DocumentoUsuario', id: string } };
+
+export type CreateToolMutationVariables = Exact<{
+  createInput: CreateToolInput;
+}>;
+
+
+export type CreateToolMutation = { __typename?: 'Mutation', createTool: { __typename?: 'Tool', id: string } };
+
+export type CreateToolVisitMutationVariables = Exact<{
+  createInput: CreateVisitToolUnitInput;
+}>;
+
+
+export type CreateToolVisitMutation = { __typename?: 'Mutation', createToolVisit: { __typename?: 'VisitToolUnit', id: string } };
+
+export type CreateToolItemMutationVariables = Exact<{
+  createInput: CreateToolUnitInput;
+}>;
+
+
+export type CreateToolItemMutation = { __typename?: 'Mutation', createToolItem: { __typename?: 'ToolUnit', id: string } };
+
+export type CreateToolPhotoMutationVariables = Exact<{
+  createInput: CreateToolUnitPhotoInput;
+}>;
+
+
+export type CreateToolPhotoMutation = { __typename?: 'Mutation', createToolPhoto: { __typename?: 'ToolUnitPhoto', id: string } };
+
+export type UpdateToolMutationVariables = Exact<{
+  updateInput: UpdateToolInput;
+}>;
+
+
+export type UpdateToolMutation = { __typename?: 'Mutation', updateTool: { __typename?: 'Tool', id: string } };
+
+export type UpdateToolItemMutationVariables = Exact<{
+  updateInput: UpdateToolUnitInput;
+}>;
+
+
+export type UpdateToolItemMutation = { __typename?: 'Mutation', updateToolItem: { __typename?: 'ToolUnit', id: string } };
+
+export type UpdateToolPhotoMutationVariables = Exact<{
+  updateInput: UpdateToolUnitPhotoInput;
+}>;
+
+
+export type UpdateToolPhotoMutation = { __typename?: 'Mutation', updateToolPhoto: { __typename?: 'ToolUnitPhoto', id: string } };
+
+export type UpdateToolVisitMutationVariables = Exact<{
+  updateInput: UpdateVisitToolUnitInput;
+}>;
+
+
+export type UpdateToolVisitMutation = { __typename?: 'Mutation', updateToolVisit: { __typename?: 'VisitToolUnit', id: string } };
+
+export type ToolsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindToolOrderBy> | FindToolOrderBy>;
+  where?: InputMaybe<FindToolWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsQuery = { __typename?: 'Query', Tools: Array<{ __typename?: 'Tool', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, reference: string, units?: Array<{ __typename?: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, status: ToolUnitStatusEnum }> | null }>, ToolsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type ToolsItemsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindToolUnitOrderBy> | FindToolUnitOrderBy>;
+  where?: InputMaybe<FindToolUnitWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsItemsQuery = { __typename?: 'Query', ToolsItems: Array<{ __typename: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, status: ToolUnitStatusEnum, tool: { __typename: 'Tool', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, reference: string }, visits?: Array<{ __typename?: 'VisitToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, usageDate: any, visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, mocked?: boolean | null, dateVisit: any, status: StatusVisitEnum, type?: { __typename?: 'VisitType', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: VisitTypeStatusEnum } | null, user: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } }, toolUnit: { __typename?: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string }, photos?: Array<{ __typename?: 'ToolUnitPhoto', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, file: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } }> | null }> | null }>, ToolsItemsCount: { __typename: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type ToolsPhotosQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindVisitToolUnitPhotoOrderBy> | FindVisitToolUnitPhotoOrderBy>;
+  where?: InputMaybe<FindVisitToolUnitPhotoWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsPhotosQuery = { __typename?: 'Query', ToolsPhotos: Array<{ __typename?: 'ToolUnitPhoto', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, file: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } }> };
+
+export type ToolsVisitsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindVisitToolUnitOrderBy> | FindVisitToolUnitOrderBy>;
+  where?: InputMaybe<FindVisitToolUnitWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ToolsVisitsQuery = { __typename?: 'Query', ToolsVisits: Array<{ __typename?: 'VisitToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, usageDate: any, toolUnit: { __typename?: 'ToolUnit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, status: ToolUnitStatusEnum } }>, ToolsVisitsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
 export type UsersQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindUsersOrderBy> | FindUsersOrderBy>;
   where?: InputMaybe<FindUsersWhere>;
@@ -2463,6 +3078,29 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, fullName: string, lastName?: string | null } };
 
+export type CreateVisitTypeMutationVariables = Exact<{
+  createInput: CreateVisitTypeInput;
+}>;
+
+
+export type CreateVisitTypeMutation = { __typename?: 'Mutation', createVisitType: { __typename?: 'VisitType', id: string } };
+
+export type UpdateVisitTypeMutationVariables = Exact<{
+  updateInput: UpdateVisitTypeInput;
+}>;
+
+
+export type UpdateVisitTypeMutation = { __typename?: 'Mutation', updateVisitType: { __typename?: 'VisitType', id: string } };
+
+export type VisitTypesQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindVisitTypeOrderBy> | FindVisitTypeOrderBy>;
+  where?: InputMaybe<FindVisitTypeWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type VisitTypesQuery = { __typename?: 'Query', visitTypes: Array<{ __typename?: 'VisitType', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: VisitTypeStatusEnum }>, visitTypesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
 export type CreateVisitMutationVariables = Exact<{
   createInput: CreateVisitInput;
 }>;
@@ -2484,14 +3122,14 @@ export type VisitsQueryVariables = Exact<{
 }>;
 
 
-export type VisitsQuery = { __typename?: 'Query', visits: Array<{ __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, mocked?: boolean | null, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, mocked?: boolean | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } }>, visitsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type VisitsQuery = { __typename?: 'Query', visits: Array<{ __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, mocked?: boolean | null, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, mocked?: boolean | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string }, type?: { __typename?: 'VisitType', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: VisitTypeStatusEnum } | null }>, visitsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type VisitFindOneArgQueryVariables = Exact<{
   where?: InputMaybe<FindVisitWhere>;
 }>;
 
 
-export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, mocked?: boolean | null, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, mocked?: boolean | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
+export type VisitFindOneArgQuery = { __typename?: 'Query', visitFindOneArg?: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, mocked?: boolean | null, status: StatusVisitEnum, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, dateFull?: any | null, mocked?: boolean | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }>, user: { __typename?: 'User', id: string, identificationNumber?: string | null, identificationType?: UserDocumentTypes | null, fullName: string, email: string } } | null };
 
 export type FinishVisitMutationVariables = Exact<{
   updateStatusInput: UpdateStatusInput;
@@ -2512,7 +3150,7 @@ export type VisitQueryVariables = Exact<{
 }>;
 
 
-export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, mocked?: boolean | null, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, mocked?: boolean | null, dateFull?: any | null }> } };
+export type VisitQuery = { __typename?: 'Query', visit: { __typename?: 'Visit', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, location?: string | null, latitude?: string | null, longitude?: string | null, dateVisit: any, status: StatusVisitEnum, mocked?: boolean | null, visitItem: Array<{ __typename?: 'VisitComent', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, description: string, type: VisitComentTypeEnum, location?: string | null, latitude?: string | null, longitude?: string | null, mocked?: boolean | null, dateFull?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, fileUrl?: string | null, url: string } | null }> } };
 
 export const UserFragmentFragmentDoc = gql`
     fragment userFragment on User {
@@ -2804,6 +3442,813 @@ export function useSigninMutation(baseOptions?: Apollo.MutationHookOptions<Signi
 export type SigninMutationHookResult = ReturnType<typeof useSigninMutation>;
 export type SigninMutationResult = Apollo.MutationResult<SigninMutation>;
 export type SigninMutationOptions = Apollo.BaseMutationOptions<SigninMutation, SigninMutationVariables>;
+export const CreateTipoDocumentoDocument = gql`
+    mutation CreateTipoDocumento($createInput: CreateTipoDocumentoInput!) {
+  createTipoDocumento(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateTipoDocumentoMutationFn = Apollo.MutationFunction<CreateTipoDocumentoMutation, CreateTipoDocumentoMutationVariables>;
+
+/**
+ * __useCreateTipoDocumentoMutation__
+ *
+ * To run a mutation, you first call `useCreateTipoDocumentoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTipoDocumentoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTipoDocumentoMutation, { data, loading, error }] = useCreateTipoDocumentoMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateTipoDocumentoMutation(baseOptions?: Apollo.MutationHookOptions<CreateTipoDocumentoMutation, CreateTipoDocumentoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTipoDocumentoMutation, CreateTipoDocumentoMutationVariables>(CreateTipoDocumentoDocument, options);
+      }
+export type CreateTipoDocumentoMutationHookResult = ReturnType<typeof useCreateTipoDocumentoMutation>;
+export type CreateTipoDocumentoMutationResult = Apollo.MutationResult<CreateTipoDocumentoMutation>;
+export type CreateTipoDocumentoMutationOptions = Apollo.BaseMutationOptions<CreateTipoDocumentoMutation, CreateTipoDocumentoMutationVariables>;
+export const UpdateTipoDocumentoDocument = gql`
+    mutation UpdateTipoDocumento($updateInput: UpdateTipoDocumentoInput!) {
+  updateTipoDocumento(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateTipoDocumentoMutationFn = Apollo.MutationFunction<UpdateTipoDocumentoMutation, UpdateTipoDocumentoMutationVariables>;
+
+/**
+ * __useUpdateTipoDocumentoMutation__
+ *
+ * To run a mutation, you first call `useUpdateTipoDocumentoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTipoDocumentoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTipoDocumentoMutation, { data, loading, error }] = useUpdateTipoDocumentoMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateTipoDocumentoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTipoDocumentoMutation, UpdateTipoDocumentoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTipoDocumentoMutation, UpdateTipoDocumentoMutationVariables>(UpdateTipoDocumentoDocument, options);
+      }
+export type UpdateTipoDocumentoMutationHookResult = ReturnType<typeof useUpdateTipoDocumentoMutation>;
+export type UpdateTipoDocumentoMutationResult = Apollo.MutationResult<UpdateTipoDocumentoMutation>;
+export type UpdateTipoDocumentoMutationOptions = Apollo.BaseMutationOptions<UpdateTipoDocumentoMutation, UpdateTipoDocumentoMutationVariables>;
+export const DocumentosUsuarioDocument = gql`
+    query DocumentosUsuario($pagination: Pagination, $where: FindDocWhere, $orderBy: [FindDocOrderBy!]) {
+  documentosUsuario(pagination: $pagination, where: $where, orderBy: $orderBy) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    usuario {
+      email
+      identificationNumber
+      identificationType
+      fullName
+      id
+    }
+    tipoDocumento {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      nombre
+      descripcion
+      obligatorio
+      activo
+    }
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      fileUrl
+      url
+    }
+    estado
+    observaciones
+  }
+  documentosUsuarioCount(
+    pagination: $pagination
+    where: $where
+    orderBy: $orderBy
+  ) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useDocumentosUsuarioQuery__
+ *
+ * To run a query within a React component, call `useDocumentosUsuarioQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDocumentosUsuarioQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDocumentosUsuarioQuery({
+ *   variables: {
+ *      pagination: // value for 'pagination'
+ *      where: // value for 'where'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useDocumentosUsuarioQuery(baseOptions?: Apollo.QueryHookOptions<DocumentosUsuarioQuery, DocumentosUsuarioQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<DocumentosUsuarioQuery, DocumentosUsuarioQueryVariables>(DocumentosUsuarioDocument, options);
+      }
+export function useDocumentosUsuarioLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DocumentosUsuarioQuery, DocumentosUsuarioQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<DocumentosUsuarioQuery, DocumentosUsuarioQueryVariables>(DocumentosUsuarioDocument, options);
+        }
+export type DocumentosUsuarioQueryHookResult = ReturnType<typeof useDocumentosUsuarioQuery>;
+export type DocumentosUsuarioLazyQueryHookResult = ReturnType<typeof useDocumentosUsuarioLazyQuery>;
+export type DocumentosUsuarioQueryResult = Apollo.QueryResult<DocumentosUsuarioQuery, DocumentosUsuarioQueryVariables>;
+export const TiposDocumentoDocument = gql`
+    query TiposDocumento($pagination: Pagination) {
+  tiposDocumento(pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nombre
+    descripcion
+    obligatorio
+    activo
+  }
+  tiposDocumentoCount(pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useTiposDocumentoQuery__
+ *
+ * To run a query within a React component, call `useTiposDocumentoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTiposDocumentoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTiposDocumentoQuery({
+ *   variables: {
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useTiposDocumentoQuery(baseOptions?: Apollo.QueryHookOptions<TiposDocumentoQuery, TiposDocumentoQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TiposDocumentoQuery, TiposDocumentoQueryVariables>(TiposDocumentoDocument, options);
+      }
+export function useTiposDocumentoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TiposDocumentoQuery, TiposDocumentoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TiposDocumentoQuery, TiposDocumentoQueryVariables>(TiposDocumentoDocument, options);
+        }
+export type TiposDocumentoQueryHookResult = ReturnType<typeof useTiposDocumentoQuery>;
+export type TiposDocumentoLazyQueryHookResult = ReturnType<typeof useTiposDocumentoLazyQuery>;
+export type TiposDocumentoQueryResult = Apollo.QueryResult<TiposDocumentoQuery, TiposDocumentoQueryVariables>;
+export const CreateDocumentoUsuarioDocument = gql`
+    mutation CreateDocumentoUsuario($createInput: CreateDocumentoUsuarioInput!) {
+  createDocumentoUsuario(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateDocumentoUsuarioMutationFn = Apollo.MutationFunction<CreateDocumentoUsuarioMutation, CreateDocumentoUsuarioMutationVariables>;
+
+/**
+ * __useCreateDocumentoUsuarioMutation__
+ *
+ * To run a mutation, you first call `useCreateDocumentoUsuarioMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDocumentoUsuarioMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDocumentoUsuarioMutation, { data, loading, error }] = useCreateDocumentoUsuarioMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateDocumentoUsuarioMutation(baseOptions?: Apollo.MutationHookOptions<CreateDocumentoUsuarioMutation, CreateDocumentoUsuarioMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateDocumentoUsuarioMutation, CreateDocumentoUsuarioMutationVariables>(CreateDocumentoUsuarioDocument, options);
+      }
+export type CreateDocumentoUsuarioMutationHookResult = ReturnType<typeof useCreateDocumentoUsuarioMutation>;
+export type CreateDocumentoUsuarioMutationResult = Apollo.MutationResult<CreateDocumentoUsuarioMutation>;
+export type CreateDocumentoUsuarioMutationOptions = Apollo.BaseMutationOptions<CreateDocumentoUsuarioMutation, CreateDocumentoUsuarioMutationVariables>;
+export const UpdateDocumentoUsuarioDocument = gql`
+    mutation UpdateDocumentoUsuario($updateInput: UpdateDocumentoUsuarioInput!) {
+  updateDocumentoUsuario(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateDocumentoUsuarioMutationFn = Apollo.MutationFunction<UpdateDocumentoUsuarioMutation, UpdateDocumentoUsuarioMutationVariables>;
+
+/**
+ * __useUpdateDocumentoUsuarioMutation__
+ *
+ * To run a mutation, you first call `useUpdateDocumentoUsuarioMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDocumentoUsuarioMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDocumentoUsuarioMutation, { data, loading, error }] = useUpdateDocumentoUsuarioMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateDocumentoUsuarioMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDocumentoUsuarioMutation, UpdateDocumentoUsuarioMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDocumentoUsuarioMutation, UpdateDocumentoUsuarioMutationVariables>(UpdateDocumentoUsuarioDocument, options);
+      }
+export type UpdateDocumentoUsuarioMutationHookResult = ReturnType<typeof useUpdateDocumentoUsuarioMutation>;
+export type UpdateDocumentoUsuarioMutationResult = Apollo.MutationResult<UpdateDocumentoUsuarioMutation>;
+export type UpdateDocumentoUsuarioMutationOptions = Apollo.BaseMutationOptions<UpdateDocumentoUsuarioMutation, UpdateDocumentoUsuarioMutationVariables>;
+export const CreateToolDocument = gql`
+    mutation CreateTool($createInput: CreateToolInput!) {
+  createTool(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolMutationFn = Apollo.MutationFunction<CreateToolMutation, CreateToolMutationVariables>;
+
+/**
+ * __useCreateToolMutation__
+ *
+ * To run a mutation, you first call `useCreateToolMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolMutation, { data, loading, error }] = useCreateToolMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolMutation, CreateToolMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolMutation, CreateToolMutationVariables>(CreateToolDocument, options);
+      }
+export type CreateToolMutationHookResult = ReturnType<typeof useCreateToolMutation>;
+export type CreateToolMutationResult = Apollo.MutationResult<CreateToolMutation>;
+export type CreateToolMutationOptions = Apollo.BaseMutationOptions<CreateToolMutation, CreateToolMutationVariables>;
+export const CreateToolVisitDocument = gql`
+    mutation CreateToolVisit($createInput: CreateVisitToolUnitInput!) {
+  createToolVisit(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolVisitMutationFn = Apollo.MutationFunction<CreateToolVisitMutation, CreateToolVisitMutationVariables>;
+
+/**
+ * __useCreateToolVisitMutation__
+ *
+ * To run a mutation, you first call `useCreateToolVisitMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolVisitMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolVisitMutation, { data, loading, error }] = useCreateToolVisitMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolVisitMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolVisitMutation, CreateToolVisitMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolVisitMutation, CreateToolVisitMutationVariables>(CreateToolVisitDocument, options);
+      }
+export type CreateToolVisitMutationHookResult = ReturnType<typeof useCreateToolVisitMutation>;
+export type CreateToolVisitMutationResult = Apollo.MutationResult<CreateToolVisitMutation>;
+export type CreateToolVisitMutationOptions = Apollo.BaseMutationOptions<CreateToolVisitMutation, CreateToolVisitMutationVariables>;
+export const CreateToolItemDocument = gql`
+    mutation CreateToolItem($createInput: CreateToolUnitInput!) {
+  createToolItem(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolItemMutationFn = Apollo.MutationFunction<CreateToolItemMutation, CreateToolItemMutationVariables>;
+
+/**
+ * __useCreateToolItemMutation__
+ *
+ * To run a mutation, you first call `useCreateToolItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolItemMutation, { data, loading, error }] = useCreateToolItemMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolItemMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolItemMutation, CreateToolItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolItemMutation, CreateToolItemMutationVariables>(CreateToolItemDocument, options);
+      }
+export type CreateToolItemMutationHookResult = ReturnType<typeof useCreateToolItemMutation>;
+export type CreateToolItemMutationResult = Apollo.MutationResult<CreateToolItemMutation>;
+export type CreateToolItemMutationOptions = Apollo.BaseMutationOptions<CreateToolItemMutation, CreateToolItemMutationVariables>;
+export const CreateToolPhotoDocument = gql`
+    mutation CreateToolPhoto($createInput: CreateToolUnitPhotoInput!) {
+  createToolPhoto(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateToolPhotoMutationFn = Apollo.MutationFunction<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>;
+
+/**
+ * __useCreateToolPhotoMutation__
+ *
+ * To run a mutation, you first call `useCreateToolPhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateToolPhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createToolPhotoMutation, { data, loading, error }] = useCreateToolPhotoMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateToolPhotoMutation(baseOptions?: Apollo.MutationHookOptions<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>(CreateToolPhotoDocument, options);
+      }
+export type CreateToolPhotoMutationHookResult = ReturnType<typeof useCreateToolPhotoMutation>;
+export type CreateToolPhotoMutationResult = Apollo.MutationResult<CreateToolPhotoMutation>;
+export type CreateToolPhotoMutationOptions = Apollo.BaseMutationOptions<CreateToolPhotoMutation, CreateToolPhotoMutationVariables>;
+export const UpdateToolDocument = gql`
+    mutation UpdateTool($updateInput: UpdateToolInput!) {
+  updateTool(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolMutationFn = Apollo.MutationFunction<UpdateToolMutation, UpdateToolMutationVariables>;
+
+/**
+ * __useUpdateToolMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolMutation, { data, loading, error }] = useUpdateToolMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolMutation, UpdateToolMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolMutation, UpdateToolMutationVariables>(UpdateToolDocument, options);
+      }
+export type UpdateToolMutationHookResult = ReturnType<typeof useUpdateToolMutation>;
+export type UpdateToolMutationResult = Apollo.MutationResult<UpdateToolMutation>;
+export type UpdateToolMutationOptions = Apollo.BaseMutationOptions<UpdateToolMutation, UpdateToolMutationVariables>;
+export const UpdateToolItemDocument = gql`
+    mutation UpdateToolItem($updateInput: UpdateToolUnitInput!) {
+  updateToolItem(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolItemMutationFn = Apollo.MutationFunction<UpdateToolItemMutation, UpdateToolItemMutationVariables>;
+
+/**
+ * __useUpdateToolItemMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolItemMutation, { data, loading, error }] = useUpdateToolItemMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolItemMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolItemMutation, UpdateToolItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolItemMutation, UpdateToolItemMutationVariables>(UpdateToolItemDocument, options);
+      }
+export type UpdateToolItemMutationHookResult = ReturnType<typeof useUpdateToolItemMutation>;
+export type UpdateToolItemMutationResult = Apollo.MutationResult<UpdateToolItemMutation>;
+export type UpdateToolItemMutationOptions = Apollo.BaseMutationOptions<UpdateToolItemMutation, UpdateToolItemMutationVariables>;
+export const UpdateToolPhotoDocument = gql`
+    mutation UpdateToolPhoto($updateInput: UpdateToolUnitPhotoInput!) {
+  updateToolPhoto(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolPhotoMutationFn = Apollo.MutationFunction<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>;
+
+/**
+ * __useUpdateToolPhotoMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolPhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolPhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolPhotoMutation, { data, loading, error }] = useUpdateToolPhotoMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolPhotoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>(UpdateToolPhotoDocument, options);
+      }
+export type UpdateToolPhotoMutationHookResult = ReturnType<typeof useUpdateToolPhotoMutation>;
+export type UpdateToolPhotoMutationResult = Apollo.MutationResult<UpdateToolPhotoMutation>;
+export type UpdateToolPhotoMutationOptions = Apollo.BaseMutationOptions<UpdateToolPhotoMutation, UpdateToolPhotoMutationVariables>;
+export const UpdateToolVisitDocument = gql`
+    mutation UpdateToolVisit($updateInput: UpdateVisitToolUnitInput!) {
+  updateToolVisit(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateToolVisitMutationFn = Apollo.MutationFunction<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>;
+
+/**
+ * __useUpdateToolVisitMutation__
+ *
+ * To run a mutation, you first call `useUpdateToolVisitMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateToolVisitMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateToolVisitMutation, { data, loading, error }] = useUpdateToolVisitMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateToolVisitMutation(baseOptions?: Apollo.MutationHookOptions<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>(UpdateToolVisitDocument, options);
+      }
+export type UpdateToolVisitMutationHookResult = ReturnType<typeof useUpdateToolVisitMutation>;
+export type UpdateToolVisitMutationResult = Apollo.MutationResult<UpdateToolVisitMutation>;
+export type UpdateToolVisitMutationOptions = Apollo.BaseMutationOptions<UpdateToolVisitMutation, UpdateToolVisitMutationVariables>;
+export const ToolsDocument = gql`
+    query Tools($orderBy: [FindToolOrderBy!], $where: FindToolWhere, $pagination: Pagination) {
+  Tools(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    reference
+    units {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      status
+    }
+  }
+  ToolsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useToolsQuery__
+ *
+ * To run a query within a React component, call `useToolsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsQuery(baseOptions?: Apollo.QueryHookOptions<ToolsQuery, ToolsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsQuery, ToolsQueryVariables>(ToolsDocument, options);
+      }
+export function useToolsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsQuery, ToolsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsQuery, ToolsQueryVariables>(ToolsDocument, options);
+        }
+export type ToolsQueryHookResult = ReturnType<typeof useToolsQuery>;
+export type ToolsLazyQueryHookResult = ReturnType<typeof useToolsLazyQuery>;
+export type ToolsQueryResult = Apollo.QueryResult<ToolsQuery, ToolsQueryVariables>;
+export const ToolsItemsDocument = gql`
+    query ToolsItems($orderBy: [FindToolUnitOrderBy!], $where: FindToolUnitWhere, $pagination: Pagination) {
+  ToolsItems(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    tool {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      reference
+      __typename
+    }
+    status
+    __typename
+    visits {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      visit {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        description
+        location
+        latitude
+        longitude
+        mocked
+        dateVisit
+        status
+        type {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          name
+          description
+          status
+        }
+        user {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
+      }
+      toolUnit {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        name
+      }
+      usageDate
+      photos {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        file {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          fileName
+          fileExtension
+          fileMode
+          fileMongoId
+          fileUrl
+          url
+        }
+      }
+    }
+  }
+  ToolsItemsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+    __typename
+  }
+}
+    `;
+
+/**
+ * __useToolsItemsQuery__
+ *
+ * To run a query within a React component, call `useToolsItemsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsItemsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsItemsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsItemsQuery(baseOptions?: Apollo.QueryHookOptions<ToolsItemsQuery, ToolsItemsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsItemsQuery, ToolsItemsQueryVariables>(ToolsItemsDocument, options);
+      }
+export function useToolsItemsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsItemsQuery, ToolsItemsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsItemsQuery, ToolsItemsQueryVariables>(ToolsItemsDocument, options);
+        }
+export type ToolsItemsQueryHookResult = ReturnType<typeof useToolsItemsQuery>;
+export type ToolsItemsLazyQueryHookResult = ReturnType<typeof useToolsItemsLazyQuery>;
+export type ToolsItemsQueryResult = Apollo.QueryResult<ToolsItemsQuery, ToolsItemsQueryVariables>;
+export const ToolsPhotosDocument = gql`
+    query ToolsPhotos($orderBy: [FindVisitToolUnitPhotoOrderBy!], $where: FindVisitToolUnitPhotoWhere, $pagination: Pagination) {
+  ToolsPhotos(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      fileUrl
+      url
+    }
+  }
+}
+    `;
+
+/**
+ * __useToolsPhotosQuery__
+ *
+ * To run a query within a React component, call `useToolsPhotosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsPhotosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsPhotosQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsPhotosQuery(baseOptions?: Apollo.QueryHookOptions<ToolsPhotosQuery, ToolsPhotosQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsPhotosQuery, ToolsPhotosQueryVariables>(ToolsPhotosDocument, options);
+      }
+export function useToolsPhotosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsPhotosQuery, ToolsPhotosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsPhotosQuery, ToolsPhotosQueryVariables>(ToolsPhotosDocument, options);
+        }
+export type ToolsPhotosQueryHookResult = ReturnType<typeof useToolsPhotosQuery>;
+export type ToolsPhotosLazyQueryHookResult = ReturnType<typeof useToolsPhotosLazyQuery>;
+export type ToolsPhotosQueryResult = Apollo.QueryResult<ToolsPhotosQuery, ToolsPhotosQueryVariables>;
+export const ToolsVisitsDocument = gql`
+    query ToolsVisits($orderBy: [FindVisitToolUnitOrderBy!], $where: FindVisitToolUnitWhere, $pagination: Pagination) {
+  ToolsVisits(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    usageDate
+    toolUnit {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      status
+    }
+  }
+  ToolsVisitsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useToolsVisitsQuery__
+ *
+ * To run a query within a React component, call `useToolsVisitsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useToolsVisitsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useToolsVisitsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useToolsVisitsQuery(baseOptions?: Apollo.QueryHookOptions<ToolsVisitsQuery, ToolsVisitsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ToolsVisitsQuery, ToolsVisitsQueryVariables>(ToolsVisitsDocument, options);
+      }
+export function useToolsVisitsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ToolsVisitsQuery, ToolsVisitsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ToolsVisitsQuery, ToolsVisitsQueryVariables>(ToolsVisitsDocument, options);
+        }
+export type ToolsVisitsQueryHookResult = ReturnType<typeof useToolsVisitsQuery>;
+export type ToolsVisitsLazyQueryHookResult = ReturnType<typeof useToolsVisitsLazyQuery>;
+export type ToolsVisitsQueryResult = Apollo.QueryResult<ToolsVisitsQuery, ToolsVisitsQueryVariables>;
 export const UsersDocument = gql`
     query Users($orderBy: [FindUsersOrderBy!], $where: FindUsersWhere, $pagination: Pagination) {
   users(orderBy: $orderBy, where: $where, pagination: $pagination) {
@@ -2995,6 +4440,121 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const CreateVisitTypeDocument = gql`
+    mutation CreateVisitType($createInput: CreateVisitTypeInput!) {
+  createVisitType(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateVisitTypeMutationFn = Apollo.MutationFunction<CreateVisitTypeMutation, CreateVisitTypeMutationVariables>;
+
+/**
+ * __useCreateVisitTypeMutation__
+ *
+ * To run a mutation, you first call `useCreateVisitTypeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateVisitTypeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createVisitTypeMutation, { data, loading, error }] = useCreateVisitTypeMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateVisitTypeMutation(baseOptions?: Apollo.MutationHookOptions<CreateVisitTypeMutation, CreateVisitTypeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateVisitTypeMutation, CreateVisitTypeMutationVariables>(CreateVisitTypeDocument, options);
+      }
+export type CreateVisitTypeMutationHookResult = ReturnType<typeof useCreateVisitTypeMutation>;
+export type CreateVisitTypeMutationResult = Apollo.MutationResult<CreateVisitTypeMutation>;
+export type CreateVisitTypeMutationOptions = Apollo.BaseMutationOptions<CreateVisitTypeMutation, CreateVisitTypeMutationVariables>;
+export const UpdateVisitTypeDocument = gql`
+    mutation UpdateVisitType($updateInput: UpdateVisitTypeInput!) {
+  updateVisitType(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateVisitTypeMutationFn = Apollo.MutationFunction<UpdateVisitTypeMutation, UpdateVisitTypeMutationVariables>;
+
+/**
+ * __useUpdateVisitTypeMutation__
+ *
+ * To run a mutation, you first call `useUpdateVisitTypeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateVisitTypeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateVisitTypeMutation, { data, loading, error }] = useUpdateVisitTypeMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateVisitTypeMutation(baseOptions?: Apollo.MutationHookOptions<UpdateVisitTypeMutation, UpdateVisitTypeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateVisitTypeMutation, UpdateVisitTypeMutationVariables>(UpdateVisitTypeDocument, options);
+      }
+export type UpdateVisitTypeMutationHookResult = ReturnType<typeof useUpdateVisitTypeMutation>;
+export type UpdateVisitTypeMutationResult = Apollo.MutationResult<UpdateVisitTypeMutation>;
+export type UpdateVisitTypeMutationOptions = Apollo.BaseMutationOptions<UpdateVisitTypeMutation, UpdateVisitTypeMutationVariables>;
+export const VisitTypesDocument = gql`
+    query VisitTypes($orderBy: [FindVisitTypeOrderBy!], $where: FindVisitTypeWhere, $pagination: Pagination) {
+  visitTypes(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+  }
+  visitTypesCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useVisitTypesQuery__
+ *
+ * To run a query within a React component, call `useVisitTypesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVisitTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVisitTypesQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useVisitTypesQuery(baseOptions?: Apollo.QueryHookOptions<VisitTypesQuery, VisitTypesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<VisitTypesQuery, VisitTypesQueryVariables>(VisitTypesDocument, options);
+      }
+export function useVisitTypesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<VisitTypesQuery, VisitTypesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<VisitTypesQuery, VisitTypesQueryVariables>(VisitTypesDocument, options);
+        }
+export type VisitTypesQueryHookResult = ReturnType<typeof useVisitTypesQuery>;
+export type VisitTypesLazyQueryHookResult = ReturnType<typeof useVisitTypesLazyQuery>;
+export type VisitTypesQueryResult = Apollo.QueryResult<VisitTypesQuery, VisitTypesQueryVariables>;
 export const CreateVisitDocument = gql`
     mutation CreateVisit($createInput: CreateVisitInput!) {
   createVisit(createInput: $createInput) {
@@ -3087,6 +4647,18 @@ export const VisitsDocument = gql`
       longitude
       dateFull
       mocked
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
     user {
       id
@@ -3094,6 +4666,15 @@ export const VisitsDocument = gql`
       identificationType
       fullName
       email
+    }
+    type {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
     }
   }
   visitsCount(where: $where, orderBy: $orderBy, pagination: $pagination) {
@@ -3160,6 +4741,18 @@ export const VisitFindOneArgDocument = gql`
       longitude
       dateFull
       mocked
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
     user {
       id
@@ -3291,6 +4884,18 @@ export const VisitDocument = gql`
       longitude
       mocked
       dateFull
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
   }
 }

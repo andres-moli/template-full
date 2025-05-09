@@ -6,6 +6,7 @@ import { Department } from '../../../general/department/entities/departament.ent
 import { Country } from '../../../general/country/entities/country.entity';
 import { CrudEntity } from '../../../patterns/crud-pattern/entities/crud-entity';
 import { Role } from '../../roles/entities/role.entity';
+import { DocumentoUsuario } from 'src/main/seller/doc/document/entities/documento-usuario.entity';
 export declare class User extends CrudEntity {
     name: string;
     middleName: string;
@@ -33,4 +34,5 @@ export declare class User extends CrudEntity {
     city: City;
     department: Department;
     country: Country;
+    documentos?: Promise<DocumentoUsuario[]>;
 }

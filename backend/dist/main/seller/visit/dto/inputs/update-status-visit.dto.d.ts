@@ -7,5 +7,6 @@ export declare class UpdateStatusInput {
     longitude?: string;
     dateVisit: Date;
     status: StatusVisitEnum;
+    fileId?: string;
     mocked?: boolean;
 }

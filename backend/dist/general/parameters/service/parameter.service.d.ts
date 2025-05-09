@@ -10,6 +10,6 @@ export declare class ParameterService extends ParameterService_base {
     private readonly filesService;
     constructor(filesService: FilesService);
     beforeCreate(context: IContext, repository: Repository<Parameter>, entity: Parameter, createInput: CreateParametersInput): Promise<void>;
-    findOneCodigo(context: IContext, codigo: string, orFaile?: boolean): Promise<string | number | Date | import("../../files/entities/file-info.entity").FileInfo>;
+    findOneCodigo(context: IContext, codigo: string, orFaile?: boolean): Promise<string | number | import("../../files/entities/file-info.entity").FileInfo | Date>;
 }
 export {};

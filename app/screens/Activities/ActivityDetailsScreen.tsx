@@ -11,6 +11,7 @@ import { formatWithCommonFormats } from '../../Lib/MangerDate';
 import dayjs from 'dayjs';
 import { translateStatusVisit } from '../../Lib';
 import ImageField from './imagenComponente';
+import { OpenUrlInApp } from '../../Lib/OpenUrl';
 const { color } = useColor();
 
 
@@ -53,7 +54,7 @@ const ActivityDetailsScreen = ({route, navigation}) => {
         .map(point => `${point.latitude},${point.longitude}`)
         .join(';');
     
-      const url = `https://4tpbvf4h-5173.use.devtunnels.ms/locationMulti/${markers}`;
+      const url = `https://89qpvk6w-5173.use.devtunnels.ms/locationMulti/${markers}`;
       navigation.navigate('MapAndoridMulti',  {link: url})
       return
     }
@@ -80,7 +81,14 @@ const ActivityDetailsScreen = ({route, navigation}) => {
           <Text style={styles.commentValue}>{item.type}</Text>
           {
             item.file && (
-              <ImageField value={item.file.url} key={item.id}></ImageField>
+              <>
+                {/* <ImageField value={item.file.url} key={item.id}></ImageField> */}
+                <TouchableOpacity onPress={() => {
+                  OpenUrlInApp(item.file?.url || '')
+                }}>
+                  <MaterialCommunityIcons name={"image"} size={24} color={color.primary} />
+                </TouchableOpacity>
+              </>
             )
           }
           {
@@ -116,6 +124,10 @@ const ActivityDetailsScreen = ({route, navigation}) => {
         <View style={styles.row}>
           <Text style={styles.label}>Fecha de creación</Text>
           <Text style={styles.value}>{formatWithCommonFormats(data.visit.dateVisit, 'LLLL')}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Tipo de visita</Text>
+          <Text style={styles.value}>{data.visit.type ? data.visit.type.name : 'SIN TIPO'}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Tiempo Dedicado</Text>

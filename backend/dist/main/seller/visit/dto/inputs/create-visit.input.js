@@ -13,6 +13,7 @@ exports.CreateVisitInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
 const visit_emun_1 = require("../../emun/visit.emun");
+const create_visit_tool_unit_input_1 = require("../../../tools/tool-visit/dto/input/create-visit-tool-unit.input");
 let CreateVisitInput = class CreateVisitInput {
 };
 exports.CreateVisitInput = CreateVisitInput;
@@ -57,9 +58,25 @@ __decorate([
     __metadata("design:type", String)
 ], CreateVisitInput.prototype, "userId", void 0);
 __decorate([
+    (0, graphql_1.Field)(() => String),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateVisitInput.prototype, "typeId", void 0);
+__decorate([
     (0, graphql_1.Field)(() => visit_emun_1.StatusVisitEnum),
     __metadata("design:type", String)
 ], CreateVisitInput.prototype, "status", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => String, { nullable: true }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateVisitInput.prototype, "fileId", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [create_visit_tool_unit_input_1.CreateVisitToolUnitInput], { nullable: true }),
+    (0, class_validator_1.IsArray)({ each: true }),
+    __metadata("design:type", Array)
+], CreateVisitInput.prototype, "tools", void 0);
 exports.CreateVisitInput = CreateVisitInput = __decorate([
     (0, graphql_1.InputType)()
 ], CreateVisitInput);

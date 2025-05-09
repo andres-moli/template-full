@@ -1,5 +1,5 @@
 import { ParseUUIDPipe } from '@nestjs/common';
-import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { FileInfo } from '../entities/file-info.entity';
 import { FilesService } from '../services/files.service';
 import { CurrentContext } from '../../../patterns/crud-pattern/decorators/current-context.decorator';
@@ -17,6 +17,13 @@ export class FilesResolver {
         @CurrentContext() context,
     ):Promise<FileInfo> {
         return this.service.findOne(context,id);
+    }
+    @Mutation(() => String,{ name:"removeFile"})
+    async removeFile(
+        @Args('id', { type: () => ID },ParseUUIDPipe) id: string,
+        @CurrentContext() context,
+    ):Promise<string> {
+        return this.service.deleteFile(context,id);
     }
 
     @ResolveField(() => String,{ name:"url" })

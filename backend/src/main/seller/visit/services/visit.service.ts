@@ -21,12 +21,13 @@ import { Response } from 'express';
 import * as ExcelJS from 'exceljs';
 import { QUERY_VISIT_STATUS_BY_COMENT, QUERY_VISIT_STATUS_BY_DATE } from '../sql/index.sql';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { VisitComentService } from '../../visit-coment/services/visit-coment.service';
 import { VisitComentStatusEnum, VisitComentTypeEnum } from '../../visit-coment/emun/visit-coment.emun';
 import { findOneVisitInProcessInput } from '../dto/inputs/find-visit-process';
 import { UpdateStatusInput } from '../dto/inputs/update-status-visit.dto';
 import { VisitComent } from '../../visit-coment/entities/visit-coment.entity';
+import { VisitToolVisittService } from '../../tools/tool-visit/service/tool-visit-service';
 export const serviceStructure = CrudServiceStructure({
   entityType: Visit,
   createInputType: CreateVisitInput,
@@ -44,7 +45,10 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
     private readonly mailService: MailService,
     private readonly httpService: HttpService,
     @Inject(forwardRef(() => VisitComentService))
-    private readonly visitComentService: VisitComentService
+    private readonly visitComentService: VisitComentService,
+    @Inject(forwardRef(() => VisitToolVisittService))
+    private readonly visitToolVisittService: VisitToolVisittService,
+    
   ){ super(); }
 
 
@@ -57,7 +61,7 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
     // entity.client = await this.clientService.findOne(context,createInput.clientId, true);
     entity.user = await this.usersService.findOne(context,createInput.userId, true);
     entity.dateVisit = createInput.dateVisit
-    // entity.type = await this.visitTypeService.findOne(context,createInput.typeId,true);
+    entity.type = await this.visitTypeService.findOne(context,createInput.typeId);
   }
   async beforeUpdate(context: IContext, repository: Repository<Visit>, entity: Visit, updateInput: UpdateVisitInput): Promise<void> {
     if(updateInput.status === entity.status){
@@ -126,6 +130,17 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
     //   entity.status = StatusVisitEnum.confirmed
     //   await repository.save(entity)
     // }
+    if (Array.isArray(createInput.tools)) {
+      for (const tool of createInput.tools) {
+        this.visitToolVisittService.create(context, {
+          toolUnitId: tool.toolUnitId,
+          visitId: entity.id,
+          photoUrls: tool.photoUrls,
+          usageDate: new Date(),
+        });
+      }
+    }
+    
     const comment = await this.visitComentService.create(context,{
       type: VisitComentTypeEnum.INICIO,
       visitId: entity.id,
@@ -136,7 +151,8 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
       longitude: entity.longitude,
       dateFull: entity.dateVisit,
       time: entity.dateVisit,
-      mocked: entity.mocked
+      mocked: entity.mocked,
+      fileId: createInput.fileId || undefined
     })
     if(entity.mocked){
       this.sendMailMockedFail(context,comment)
@@ -157,7 +173,8 @@ export class VisitService extends CrudServiceFrom(serviceStructure) {
       longitude: updateInput.longitude,
       dateFull: moment(moment(updateInput.dateVisit).format('YYYY-MM-DD HH:mm')).local().toDate(),
       time: updateInput.dateVisit,
-      mocked: updateInput.mocked
+      mocked: updateInput.mocked,
+      fileId: updateInput.fileId || undefined
     })
     if(updateInput.mocked){
       this.sendMailMockedFail(context,comment)

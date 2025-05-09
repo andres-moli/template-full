@@ -261,9 +261,9 @@ const ActivityTable = () => {
                     <th scope="col" className="px-6 py-4">
                       Fecha
                     </th>
-                    {/* <th scope="col" className="px-6 py-4">
-                      tiempo
-                    </th> */}
+                    <th scope="col" className="px-6 py-4">
+                      Tipo
+                    </th>
                     <th scope="col" className="px-6 py-4">
                       Descripción
                     </th>
@@ -285,9 +285,9 @@ const ActivityTable = () => {
                         <tr className="border-b dark:border-neutral-500">
                         <td className="whitespace-nowrap px-6 py-4">{visit.user.fullName}</td>
                         <td className="whitespace-nowrap px-6 py-4">{dayjs(visit.dateVisit).format('YYYY-MM-DD HH:mm')}</td>
-                        {/* <td>
-                          {FormatTimeToMinut(visit)}
-                        </td> */}
+                        <td>
+                          {visit.type ? visit.type.name : 'SIN TIPO'}
+                        </td>
                         <td className="whitespace-nowrap px-6 py-4">{visit.description}</td>
                         <td className="px-6 py-4">
                         <div className="flex items-center">

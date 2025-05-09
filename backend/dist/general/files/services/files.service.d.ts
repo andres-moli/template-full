@@ -11,6 +11,7 @@ export declare class FilesService extends FilesService_base {
     constructor(filesManagerService: FilesManagerService);
     create(context: IContext, createFileInput: CreateFileInput): Promise<FileInfo>;
     saveImageUrl(context: IContext, file: Express.Multer.File): Promise<FileInfo>;
+    deleteFile(context: IContext, id: string): Promise<string>;
     download(context: IContext, id: string, res: Response): Promise<void>;
 }
 export {};

@@ -34,7 +34,10 @@ export class UpdateStatusInput {
     @Field(() => StatusVisitEnum)
     @IsString()
     status: StatusVisitEnum;
-
+    @Field(() => String, {nullable: true})
+    @IsString()
+    @IsOptional()
+    fileId?:string;
 
     @Field(() => Boolean, {nullable: true})
     @IsBoolean()

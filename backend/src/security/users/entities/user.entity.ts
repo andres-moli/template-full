@@ -1,5 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { TypeWorker, UserTypes } from '../enums/user-type.enum';
 import { UserDocumentTypes } from '../../../common/enum/document-type.enum';
 import { UserStatusTypes } from '../enums/status-type.enum';
@@ -8,6 +8,7 @@ import { Department } from '../../../general/department/entities/departament.ent
 import { Country } from '../../../general/country/entities/country.entity';
 import { CrudEntity } from '../../../patterns/crud-pattern/entities/crud-entity';
 import { Role } from '../../roles/entities/role.entity';
+import { DocumentoUsuario } from 'src/main/seller/doc/document/entities/documento-usuario.entity';
 
 @Entity({ name: 'sec_user' })
 @ObjectType()
@@ -115,4 +116,8 @@ export class User extends CrudEntity {
   @ManyToOne( () => Country, (country) => country.id ,{ lazy: true, nullable: true})  
   @Field(() => Country, {nullable: true}) 
   country: Country;
+
+  @OneToMany(() => DocumentoUsuario, doc => doc.usuario, { lazy: true })
+  @Field(() => [DocumentoUsuario], { nullable: true })
+  documentos?: Promise<DocumentoUsuario[]>;
 }

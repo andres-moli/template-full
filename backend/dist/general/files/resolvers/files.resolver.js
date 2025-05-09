@@ -25,6 +25,9 @@ let FilesResolver = class FilesResolver {
     async findOne(id, context) {
         return this.service.findOne(context, id);
     }
+    async removeFile(id, context) {
+        return this.service.deleteFile(context, id);
+    }
     async getUrl(file, context) {
         return `${process.env.BASE_URL}${file.fileUrl}`;
     }
@@ -38,6 +41,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], FilesResolver.prototype, "findOne", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => String, { name: "removeFile" }),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.ID }, common_1.ParseUUIDPipe)),
+    __param(1, (0, current_context_decorator_1.CurrentContext)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], FilesResolver.prototype, "removeFile", null);
 __decorate([
     (0, graphql_1.ResolveField)(() => String, { name: "url" }),
     __param(0, (0, graphql_1.Parent)()),

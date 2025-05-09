@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { VisitComent, VisitComentTypeEnum } from '../../../domain/graphql';
 import dayjs from 'dayjs';
 import MapsComponentOneComment from '../../Maps/mapsOneComent';
+import { BsFiles } from 'react-icons/bs';
+import { onClickDocument } from '../../../lib/utils';
 interface CommentModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -56,6 +58,13 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, comments }
                   )
                 }
               <div className="flex justify-end">
+              {
+                  comment.file && (
+                    <BsFiles className="w-5 h-8 text-gray-500 mr-3 cursor-pointer" 
+                    onClick={() => onClickDocument(comment.file?.url || '')}
+                    />
+                  )
+                }
                 <button
                   onClick={() => onOpenMapComent(comment)}
                   className="bg-blue-500 text-white hover:bg-blue-600 font-medium rounded-lg text-sm px-4 py-2 focus:ring-4 focus:outline-none transition duration-200"

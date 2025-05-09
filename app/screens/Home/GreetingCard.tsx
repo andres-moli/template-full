@@ -34,7 +34,7 @@ const GreetingCard = ({greeting, scrollOffset }: {greeting: string, scrollOffset
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: 20,
+      // marginBottom: 20,
       shadowColor: '#000',
       shadowOpacity: 0.1,
       shadowOffset: { width: 0, height: 2 },

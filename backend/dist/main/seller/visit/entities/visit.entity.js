@@ -15,7 +15,9 @@ const typeorm_1 = require("typeorm");
 const crud_entity_1 = require("../../../../patterns/crud-pattern/entities/crud-entity");
 const user_entity_1 = require("../../../../security/users/entities/user.entity");
 const visit_emun_1 = require("../emun/visit.emun");
+const visit_type_entity_1 = require("../../visit-type/entities/visit-type.entity");
 const visit_coment_entity_1 = require("../../visit-coment/entities/visit-coment.entity");
+const visit_tool_unit_entity_1 = require("../../tools/tool-visit/entities/visit-tool-unit.entity");
 let Visit = class Visit extends crud_entity_1.CrudEntity {
 };
 exports.Visit = Visit;
@@ -55,6 +57,16 @@ __decorate([
     (0, graphql_1.Field)(() => visit_emun_1.StatusVisitEnum),
     __metadata("design:type", String)
 ], Visit.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => visit_tool_unit_entity_1.VisitToolUnit, vtu => vtu.visit, { lazy: true }),
+    (0, graphql_1.Field)(() => [visit_tool_unit_entity_1.VisitToolUnit], { nullable: true }),
+    __metadata("design:type", Array)
+], Visit.prototype, "toolUnitsUsed", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => visit_type_entity_1.VisitType, (type) => type.id, { lazy: true, nullable: true }),
+    (0, graphql_1.Field)(() => visit_type_entity_1.VisitType, { nullable: true }),
+    __metadata("design:type", visit_type_entity_1.VisitType)
+], Visit.prototype, "type", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => visit_coment_entity_1.VisitComent, (item) => item.visit, { lazy: true }),
     (0, graphql_1.Field)(() => [visit_coment_entity_1.VisitComent]),

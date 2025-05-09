@@ -50,7 +50,7 @@ const HomeScreen = ({ route, navigation }) => {
         onScroll={handleScroll} // Escucha el evento de scroll
         scrollEventThrottle={16} // Controla la frecuencia con la que se dispara el evento de scroll
       >
-        <StatisticsDashboard />
+        {/* <StatisticsDashboard /> */}
         <DailyActivityCard />
         <DailyReminders refetchControl={refreshing} />
       </ScrollView>

@@ -56,6 +56,12 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateStatusInput.prototype, "status", void 0);
 __decorate([
+    (0, graphql_1.Field)(() => String, { nullable: true }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatusInput.prototype, "fileId", void 0);
+__decorate([
     (0, graphql_1.Field)(() => Boolean, { nullable: true }),
     (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),

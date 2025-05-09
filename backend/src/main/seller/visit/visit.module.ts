@@ -11,6 +11,7 @@ import { MailModule } from 'src/general/email/emial.module';
 import { VisitController } from './controller/visit.controller';
 import { HttpModule } from '@nestjs/axios';
 import { VisitComentModule } from '../visit-coment/visit-coment.module';
+import { VisitToolUnitModule } from '../tools/tool-visit/VisitToolUnitModule.module';
 
 
 @Module({
@@ -23,8 +24,8 @@ import { VisitComentModule } from '../visit-coment/visit-coment.module';
     VisitTypeModule,
     MailModule,
     HttpModule,
-    VisitComentModule
-    
+    VisitComentModule,
+    forwardRef(()=> VisitToolUnitModule)
   ],
   controllers: [VisitController],
   exports: [VisitService]

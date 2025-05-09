@@ -7,7 +7,7 @@ import { FilesManagerService } from './files-manager.service';
 import { getMimeTypeFromExtension } from '../functions/content-type';
 import { DataService } from '../../../patterns/crud-pattern/mixins/data-service.mixin';
 import { IContext } from '../../../patterns/crud-pattern/interfaces/context.interface';
-import { writeFileSync } from 'fs';
+import { existsSync, unlinkSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 @Injectable()
@@ -56,6 +56,28 @@ export class FilesService extends DataService(FileInfo) {
 
     }
 
+    async deleteFile(context: IContext, id: string){
+        const repository = this.getRepository(context);
+    
+        // Busca el archivo por ID
+        const fileInfo = await repository.findOneBy({ id });
+    
+        if (!fileInfo) {
+            throw new Error(`Archivo con ID ${id} no encontrado.`);
+        }
+    
+        // Construye la ruta absoluta del archivo
+        const filePath = join(__dirname, '..', '..', '..', '..', fileInfo.fileUrl);
+    
+        // Elimina el archivo físico si existe
+        if (existsSync(filePath)) {
+            unlinkSync(filePath);
+        }
+    
+        // Elimina el registro en la base de datos
+        await repository.softDelete({ id });
+        return 'TODO BIEN'
+    }
     async download(context:IContext, id: string, res: Response): Promise<void> {
         const repository = this.getRepository(context);
         const entity = await repository.findOne({ where: { id }, select: ["fileBuffer", "fileExtension", "fileMode", "fileMongoId", "fileName"] });

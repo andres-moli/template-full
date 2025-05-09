@@ -91,6 +91,7 @@ const CalendarScreen = ({navigation}) => {
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{formatWithCommonFormats(item.dateVisit, 'LLL')}</Text>
               <Text style={styles.cardDescription}>{item.description}</Text>
+              <Text style={styles.cardTime}>{item.type ? item.type.name : 'SIN TIPO'}</Text>
               <Text style={styles.cardTime}>{translateStatusVisit(item.status)}</Text>
             </View>
           </TouchableOpacity>

@@ -7,7 +7,7 @@ const { width, height } = Dimensions.get('window');
 
 const MapComponent = ({ route }) => {
   const { latitude, longitude } = route.params;
-  const [url, setUrl] = useState(`https://4tpbvf4h-5173.use.devtunnels.ms/locationFree/${latitude}/${longitude}`)
+  const [url, setUrl] = useState(`https://89qpvk6w-5173.use.devtunnels.ms/locationFree/${latitude}/${longitude}`)
   console.log(url)
   const [region, setRegion] = useState({
     latitude: latitude,

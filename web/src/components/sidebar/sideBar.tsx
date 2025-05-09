@@ -1,11 +1,13 @@
-import { BiLogOut } from "react-icons/bi";
+import { BiFile, BiLogOut, BiSolidFile } from "react-icons/bi";
 import { FaHome, FaStore, FaBox, FaTags, FaClipboardList, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
-import { FaMapLocation } from "react-icons/fa6";
+import { FaFileCirclePlus, FaMapLocation } from "react-icons/fa6";
 import { FiMapPin } from "react-icons/fi";
-import { BsFillPinMapFill } from "react-icons/bs";
+import { BsFillPinMapFill, BsTools, BsTypeBold } from "react-icons/bs";
 import { PiMapPinLineFill } from "react-icons/pi";
+import { FcDocument } from "react-icons/fc";
+import { HiOutlineDocumentAdd } from "react-icons/hi";
 
 const SideBar = () => {
   const navigate = useNavigate()
@@ -41,6 +43,15 @@ const SideBar = () => {
           </li>
           <li>
             <a
+              href="/visit-type"
+              className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              <BsTypeBold className="w-5 h-5 text-gray-500 mr-3" />
+              Tipo visita
+            </a>
+          </li>
+          <li>
+            <a
               href="/report"
               className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
             >
@@ -70,27 +81,48 @@ const SideBar = () => {
             </a>
           </li>
         </ul>
-        {/* <h2 className="mt-6 text-xs font-bold text-gray-800">PRODUCT MANAGEMENT</h2>
+        <h2 className="mt-6 text-xs font-bold text-gray-800">Herramientas</h2>
         <ul className="mt-4 space-y-2">
           <li>
             <a
-              href="#"
+              href="/tools-item"
               className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
             >
-              <FaBox className="w-5 h-5 text-gray-500 mr-3" />
-              Products
+              <BsTools className="w-5 h-5 text-gray-500 mr-3" />
+              Herramientas
             </a>
           </li>
           <li>
             <a
-              href="/categories"
+              href="/tools"
               className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
             >
               <FaTags className="w-5 h-5 text-gray-500 mr-3" />
               Categories
             </a>
           </li>
-        </ul> */}
+        </ul>
+        <h2 className="mt-6 text-xs font-bold text-gray-800">Documentos</h2>
+        <ul className="mt-4 space-y-2">
+          <li>
+            <a
+              href="/document"
+              className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              <BiSolidFile className="w-5 h-5 text-gray-500 mr-3" />
+              Tipos Documentos
+            </a>
+          </li>
+          <li>
+            <a
+              href="/document-user"
+              className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              <FaFileCirclePlus className="w-5 h-5 text-gray-500 mr-3" />
+              Documento usuario
+            </a>
+          </li>
+        </ul>
         <h2 className="mt-6 text-xs font-bold text-gray-800">USUARIOS </h2>
         <ul className="mt-4 space-y-2">
           <li>

@@ -33,6 +33,18 @@ query Visits($where: FindVisitWhere, $orderBy: [FindVisitOrderBy!], $pagination:
       longitude
       dateFull
       mocked
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
     user {
       id
@@ -40,6 +52,15 @@ query Visits($where: FindVisitWhere, $orderBy: [FindVisitOrderBy!], $pagination:
       identificationType
       fullName
       email
+    }
+        type {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
     }
   }
   visitsCount(where: $where, orderBy: $orderBy, pagination: $pagination)  {
@@ -74,6 +95,18 @@ query VisitFindOneArg($where: FindVisitWhere) {
       longitude
       dateFull
       mocked
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
     user {
       id
@@ -119,6 +152,18 @@ query Visit($visitId: ID!) {
       longitude
       mocked
       dateFull
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        fileUrl
+        url
+      }
     }
   }
 }

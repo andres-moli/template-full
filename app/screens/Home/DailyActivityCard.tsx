@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image, Keyboard, Alert, ActivityIndicator, Platform } from 'react-native';
-import {useColor} from '../../Constants/Color';
+import { useColor } from '../../Constants/Color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,259 +13,66 @@ import dayjs, { Dayjs } from 'dayjs';
 import handleUploadImage from '../../Lib/uptloadFile';
 import UploadProgressModal from './updload';
 import ImageField from '../Activities/imagenComponente';
+import VisitTypeSelector from './VisitTypeSelector';
+import FileViewer from '../Activities/FileViewer';
+import useDailyActivity from './useDailyActivity';
+import ToolSelectionModal, { ToolWithImages } from './ToolSelectionModal';
+import useModal from '../../hook/useModal';
+import UploadProgressModal2 from '../../Lib/UploadProgressModal';
+
 const { color } = useColor();
-const ERROR_MOCK_LOCATION = 'Detectamos que la ubicación es falsa. Por favor, verifica tu conexión o intenta con una ubicación válida.'
+const ERROR_MOCK_LOCATION = 'Detectamos que la ubicación es falsa. Por favor, verifica tu conexión o intenta con una ubicación válida.';
+
 const DailyActivityCard = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const [loading, setLoading] = useState(false); // Estado para cargar
-  const [loadingF, setLoadingF] = useState(false); // Estado para cargar
-  const [loadingC, setLoadingC] = useState(false); // Estado para cargar
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [comment, setComment] = useState('');
-  const [fileUri, setFileuri] = useState();
-
-  const [activities, setActivities] = useState<{ text: string; timestamp: string; image?: string; file?: string }[]>([]);
-  const [isDayStarted, setIsDayStarted] = useState(false); // Estado para controlar si el día ha comenzado
-  const [createVisit] = useCreateVisitMutation();
-  const [updateVisit] = useFinishVisitMutation();
-  const [commentAdd] = useCreateVisitComentMutation()
-  const toggleOpen = () => {
-    setIsOpen(!isOpen);
-  };
-  const {user} = useUser()
-  const {data, error, loading: loadingS, refetch} = useVisitFindOneArgQuery({
-    variables: {
-      where: {
-        user: {
-          _eq: user.id
-        },
-        status: {
-          _eq: StatusVisitEnum.Initiated
-        }
-
-      }
-    }
-  })
-  const handleStartDay = async () => {
-    Alert.alert('Alerta', '¿Estas seguro que quieres comenzar con la actividad?', 
-      [
-        {
-          isPreferred: true,
-          text: 'SI',
-          onPress:  async ()=> {
-            const { status } = await Location.requestForegroundPermissionsAsync(); // Solicitar permisos de ubicación
-            if (status === 'granted') {
-              const location = await Location.getCurrentPositionAsync({}); // Obtener la ubicación actual
-              const locationString = `Lat: ${location.coords.latitude}, Lon: ${location.coords.longitude}`;
-              try {
-                setLoading(true)
-                const res = await createVisit({
-                  variables: {
-                    createInput: {
-                      dateVisit: new Date(),
-                      status: StatusVisitEnum.Initiated,
-                      userId: user.id || '',
-                      description: comment,
-                      latitude: location.coords.latitude.toString(),
-                      longitude: location.coords.longitude.toString(),
-                      mocked: location.mocked
-                    }
-                  }
-                })
-                if(res.errors){
-                  Alert.alert("HUBO UN ERROR", res.errors[0].message, [ {text: 'ACEPTAR', style: 'default'}]);
-                  return
-                }
-                setComment('')
-                Alert.alert("¡Muy bien!", 'El proceso termino con éxito', [ {text: 'ACEPTAR', style: 'default'}]);
-              }catch(err){
-                const menssage = ToastyErrorGraph(err as any);
-                Alert.alert("HUBO UN ERROR", menssage, [ {text: 'ACEPTAR', style: 'default'},])
-              }finally{
-                refetch()
-                setLoading(false); // Establecer carga en falso al finalizar
-
-              }
-            } else {
-              Alert.alert('Permiso de ubicación no concedido');
-            }
-          }
-        }, 
-        {
-          text: 'NO'
-        }
-      ]
-    )
-
-  };
-  const handleFinishDay = async () => {
-    Alert.alert('Alerta', '¿Estas seguro que quieres finalizar con la actividad?', 
-      [
-        {
-          isPreferred: true,
-          text: 'SI',
-          onPress:  async ()=> {
-            const { status } = await Location.requestForegroundPermissionsAsync(); // Solicitar permisos de ubicación
-            if (status === 'granted') {
-              const location = await Location.getCurrentPositionAsync({}); // Obtener la ubicación actual
-              const locationString = `Lat: ${location.coords.latitude}, Lon: ${location.coords.longitude}`;
-              try {
-                setLoadingF(true)
-                const res = await updateVisit({
-                  variables: {
-                    updateStatusInput: {
-                      dateVisit: new Date(),
-                      status: StatusVisitEnum.Initiated,
-                      id: data?.visitFindOneArg?.id || '',
-                      description: comment,
-                      latitude: location.coords.latitude.toString(),
-                      longitude: location.coords.longitude.toString(),
-                      mocked: location.mocked
-                    }
-                  }
-                })
-                if(res.errors){
-                  Alert.alert("HUBO UN ERROR", res.errors[0].message, [ {text: 'ACEPTAR', style: 'default'}]);
-                  return
-                }
-                setComment('')
-                Alert.alert("¡Muy bien!", 'El proceso termino con éxito', [ {text: 'ACEPTAR', style: 'default'}]);
-              }catch(err){
-                const menssage = ToastyErrorGraph(err as any);
-                Alert.alert("HUBO UN ERROR", menssage, [ {text: 'ACEPTAR', style: 'default'},])
-              }finally{
-                refetch()
-                setLoadingF(false); // Establecer carga en falso al finalizar
-              }
-            } else {
-              Alert.alert('Permiso de ubicación no concedido');
-            }
-          }
-        }, 
-        {
-          text: 'NO'
-        }
-      ]
-    )
-  }
-  const handleCommentAdd = async () => {
-    Alert.alert('Alerta', '¿Estas seguro que quieres agregar el comentario?', 
-      [
-        {
-          isPreferred: true,
-          text: 'SI',
-          onPress:  async ()=> {
-            let fileId: undefined | any = undefined;
-            if(fileUri){
-              const file = {
-                uri: Platform.OS === 'ios' ? fileUri.uri.replace('file://', '') : fileUri.uri,
-                name: `test-file.jpeg`,
-                type: fileUri.mimeType,
-              }
-              setIsUploading(true);
-              setUploadProgress(0);
-              const dataFile = await handleUploadImage(file,setUploadProgress)
-              setIsUploading(false);
-              fileId = dataFile?.id
-            }
-            const { status } = await Location.requestForegroundPermissionsAsync(); // Solicitar permisos de ubicación
-            if (status === 'granted') {
-              const location = await Location.getCurrentPositionAsync({}); // Obtener la ubicación actual
-              const locationString = `Lat: ${location.coords.latitude}, Lon: ${location.coords.longitude}`;
-              try {
-                setLoadingC(true)
-                const res = await commentAdd({
-                  variables: {
-                    createInput: {
-                      dateFull: new Date(),
-                      date: new Date(),
-                      time: new Date(),
-                      visitId: data?.visitFindOneArg?.id || '',
-                      description: comment,
-                      type: VisitComentTypeEnum.Intermedio,
-                      latitude: location.coords.latitude.toString(),
-                      longitude: location.coords.longitude.toString(),
-                      mocked: location.mocked,
-                      fileId: fileId
-                    }
-                  }
-                })
-                if(res.errors){
-                  Alert.alert("HUBO UN ERROR", res.errors[0].message, [ {text: 'ACEPTAR', style: 'default'}]);
-                  return
-                }
-                setComment('')
-                Alert.alert("¡Muy bien!", 'El proceso termino con éxito', [ {text: 'ACEPTAR', style: 'default'}]);
-              }catch(err){
-                const menssage = ToastyErrorGraph(err as any);
-                Alert.alert("HUBO UN ERROR", menssage, [ {text: 'ACEPTAR', style: 'default'},])
-              }finally{
-                refetch()
-                setLoadingC(false); // Establecer carga en falso al finalizar
-              }
-            } else {
-              Alert.alert('Permiso de ubicación no concedido');
-            }
-          }
-        }, 
-        {
-          text: 'NO'
-        }
-      ]
-    )
-  }
-  const handleImagePicker = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const file = result.assets[0];
-      setFileuri(file)
-    }
-  };
-
-  const handleDocumentPicker = async () => {
-    const result = await DocumentPicker.getDocumentAsync({});
-    if (result.type === 'success') {
-      setFileuri(result)
-    }
-  };
-  const handleCameraPicker = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-  
-    if (!result.canceled) {
-      const file = result.assets[0];
-  
-      // if (!isValidFileSize(file.fileSize)) {
-      //   alert(`El archivo no debe superar los ${MAX_FILE_SIZE_MB}MB.`);
-      //   return;
-      // }
-  
-      setFileuri(file);
-    }
-  };
-  console.log(data?.visitFindOneArg?.visitItem)
+  const { isVisible, open, close } = useModal();
+  const {
+    isOpen,
+    setIsOpen,
+    loading,
+    loadingF,
+    loadingC,
+    isUploading,
+    uploadProgress,
+    comment,
+    setComment,
+    fileUri,
+    setFileuri,
+    typeVisitId,
+    setTypeVisitId,
+    activities,
+    setActivities,
+    handleStartDay,
+    handleFinishDay,
+    handleCameraPicker,
+    handleCommentAdd,
+    commentMap,
+    refetch,
+    handleAddComment,
+    data,
+    setToolWithImages,
+    toolWithImages
+  } = useDailyActivity();
+  const mode = data?.visitFindOneArg ? 'fin' : 'inicio'
+  const predefinedComments = commentMap[mode];
   return (
     <View style={styles.card}>
-      <TouchableOpacity onPress={toggleOpen} style={styles.header}>
+      <TouchableOpacity onPress={() => setIsOpen(!isOpen)} style={styles.header}>
         <Text style={styles.headerText}>
-          {data?.visitFindOneArg ? 'Estoy trabajando en...' : 'Voy a comenzar a...'}
+          {activities ? 'Estoy trabajando en...' : 'Voy a comenzar a...'}
         </Text>
         <MaterialCommunityIcons name={isOpen ? 'arrow-up-drop-circle' : 'arrow-down-drop-circle'} size={20} color={color.primary} />
-        {/*<MaterialCommunityIcons onPress={()=> {navigator.navigate("ActivityDetails", {id:'123'})}} name='chevron-triple-right' size={26} color={color.coral} />*/}
       </TouchableOpacity>
-      <UploadProgressModal visible={isUploading} progress={uploadProgress} />
+      <UploadProgressModal2 visible={isUploading} progress={uploadProgress} />
       {isOpen && (
         <View style={styles.content}>
+          <Text style={styles.label}>Comentarios rápidos:</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipContainer}>
+            {predefinedComments.map((item, index) => (
+              <TouchableOpacity key={index} style={styles.chip} onPress={() => handleAddComment(item)}>
+                <Text style={styles.chipText}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
           <TextInput
             style={styles.textArea}
             placeholder="Comentario antes de iniciar la actividad..."
@@ -273,65 +80,65 @@ const DailyActivityCard = () => {
             onChangeText={setComment}
             multiline
             numberOfLines={4}
-          /> 
-          {
-            (data?.visitFindOneArg)
-            ?
+          />
+          <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={handleCameraPicker} style={styles.iconButton}>
+              <MaterialCommunityIcons name="camera" color={color.primary} size={28} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={open} style={styles.iconButton}>
+              <MaterialCommunityIcons name="tools" color={color.primary} size={28} />
+            </TouchableOpacity>
+            {fileUri && (
+              <TouchableOpacity onPress={() => setFileuri(undefined)} style={styles.iconButton}>
+                <MaterialCommunityIcons name="delete-restore" color={color.primary} size={28} />
+              </TouchableOpacity>
+            )}
+          </View>
+          {data?.visitFindOneArg ? (
             <>
-              <View style={styles.iconContainer}>
-                <TouchableOpacity onPress={handleImagePicker} style={styles.iconButton}>
-                  <MaterialCommunityIcons name="image-plus" color={color.primary} size={28} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleCameraPicker} style={styles.iconButton}>
-                  <MaterialCommunityIcons name="camera" color={color.primary} size={28} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=> setFileuri(undefined)} style={styles.iconButton}>
-                  <MaterialCommunityIcons name="delete-restore" color={color.primary} size={28} />
-                </TouchableOpacity>
-              </View>
-            <TouchableOpacity disabled={loading || loadingC} onPress={handleCommentAdd} style={styles.commentDayButton}>
-            {loading || loadingC? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.startDayText}>{'Agregar Comentario'}</Text>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity disabled={loading || loadingF} onPress={handleFinishDay} style={styles.finishDayButton}>
-            {loading || loadingF? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.startDayText}>{'Finalizar Actividad'}</Text>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity disabled={loading || loadingC} onPress={handleCommentAdd} style={styles.commentDayButton}>
+                {loading || loadingC ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.startDayText}>Agregar Comentario</Text>}
+              </TouchableOpacity>
+              <TouchableOpacity disabled={loading || loadingF} onPress={handleFinishDay} style={styles.finishDayButton}>
+                {loading || loadingF ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.startDayText}>Finalizar Actividad</Text>}
+              </TouchableOpacity>
             </>
-            :
-            <TouchableOpacity disabled={loading || loadingS} onPress={handleStartDay} style={styles.startDayButton}>
-            {loading || loadingS? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.startDayText}>{'Iniciar Actividad'}</Text>
-              )}
-            </TouchableOpacity>
-          }
-  
-          <>
-            <ScrollView style={styles.activityList} showsVerticalScrollIndicator={false}>
-              {data?.visitFindOneArg?.visitItem.map((activity, index) => (
-                <View key={index} style={styles.activityItem}>
-                  <Text style={styles.activityText}>• {activity.description} 
-                  <Text style={styles.timestamp}>({dayjs(activity.dateFull).format('HH:mm:ss')})</Text></Text>
-                  <TouchableOpacity onPress={() => console.log(index)}>
-                    <MaterialCommunityIcons name="comment-account" color={color.primary} size={20} />
-                  </TouchableOpacity>
-                  {activity.file && (
-                    <ImageField value={activity.file.url} key={activity.id}></ImageField>
-                  )}
-                </View>
-              ))}
-            </ScrollView>
-          </>
+          ) : (
+            <>
+            {
+              toolWithImages.length > 0 && (
+                <Text style={{ color: color.darkGray, fontSize: 16, marginBottom: 10 }}>
+                  Vas a usar: {toolWithImages.map(t => t.name).join(', ')}
+                </Text>
+              )
+            }
+              <VisitTypeSelector
+                onSelect={(visitType) => setTypeVisitId(visitType?.id)}
+              />
+              <TouchableOpacity disabled={loading || loadingF} onPress={handleStartDay} style={styles.startDayButton}>
+                {loading || loadingF ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.startDayText}>Iniciar Actividad</Text>}
+              </TouchableOpacity>
+            </>
+          )}
+          <ScrollView style={styles.activityList} showsVerticalScrollIndicator={false}>
+            {data?.visitFindOneArg && data?.visitFindOneArg?.visitItem.map((activity, index) => (
+              <View key={index} style={styles.activityItem}>
+                <Text style={styles.activityText}>• {activity.description} <Text style={styles.timestamp}>({dayjs(activity.dateFull).format('HH:mm:ss')})</Text></Text>
+                <TouchableOpacity onPress={() => console.log(index)}>
+                  <MaterialCommunityIcons name="comment-account" color={color.primary} size={20} />
+                </TouchableOpacity>
+                {activity.file && <ImageField value={activity.file.url} key={activity.id} />}
+              </View>
+            ))}
+          </ScrollView>
         </View>
       )}
+      <ToolSelectionModal
+          visible={isVisible}
+          onClose={close}
+          onSubmit={(data) => setToolWithImages(data)}
+          visitId={data?.visitFindOneArg?.id}
+        />
     </View>
   );
 };
@@ -347,6 +154,26 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     margin: 20,
+  },
+  label: {
+    marginBottom: 8,
+    fontWeight: '600',
+    fontSize: 16
+  },
+  chipContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  chip: {
+    backgroundColor: color.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  chipText: {
+    fontSize: 14,
+    color: color.lightBeige
   },
   header: {
     flexDirection: 'row',
@@ -442,5 +269,4 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 });
-
 export default DailyActivityCard;

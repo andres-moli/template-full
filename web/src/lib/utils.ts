@@ -1,6 +1,7 @@
 
 import { GraphQLError } from "graphql";
 import { toast } from "sonner";
+import { ToolUnitStatusEnum } from "../domain/graphql";
 
 /**
  * Raises an error alert for graph fetchs
@@ -22,4 +23,23 @@ export const ToastyErrorGraph = (request: IToastyErrorGraph) => {
     return true;
   }
   return false;
+};
+export function traducirEstadoHerramienta(status: ToolUnitStatusEnum): string {
+  switch (status) {
+    case ToolUnitStatusEnum.Available:
+      return 'Disponible';
+    case ToolUnitStatusEnum.InUse:
+      return 'En uso';
+    case ToolUnitStatusEnum.Lost:
+      return 'Perdida';
+    case ToolUnitStatusEnum.Damaged:
+      return 'Dañada';
+    case ToolUnitStatusEnum.Maintenance:
+      return 'En mantenimiento';
+    default:
+      return 'Estado desconocido';
+  }
+}
+export const onClickDocument = (url: string) => {
+  window.open(url, '_blank', 'noopener,noreferrer,width=800,height=600');
 };
